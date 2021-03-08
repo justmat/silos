@@ -1,6 +1,6 @@
--- live granular instrument 
+-- live granular instrument
 --
--- use a keyboard to 
+-- use a keyboard to
 -- assign controls,
 -- set parameter values,
 -- and control a granular
@@ -73,16 +73,16 @@ end
 function init()
   screen.aa(0)
 
-  params:add_separator() 
+  params:add_separator()
   for i = 1, 4 do
     params:add_group("track " .. i, 10)
-  
+
     params:add_number(i .. "gate", i .. " gate", 0, 1, 0)
     params:set_action(i .. "gate", function(value) engine.gate(i, value) end)
-  
+
     params:add_number(i .. "record", i .. " record", 0, 1, 0)
     params:set_action(i .. "record", function(value) engine.record(i, value) end)
-    
+
     params:add_taper(i .. "gain", i .. " gain", -60, 20, -12, 0, "dB")
     params:set_action(i .. "gain", function(value) engine.gain(i, math.pow(10, value / 20)) end)
 
@@ -100,7 +100,7 @@ function init()
 
     params:add_taper(i .. "density", i .. " density", 0, 512, 10, 6, "hz")
     params:set_action(i .. "density", function(value) engine.density(i, value) end)
-    
+
     params:add_taper(i .. "pitch", i .. " pitch", -24, 24, 0, 0, "st")
     params:set_action(i .. "pitch", function(value) engine.pitch(i, math.pow(0.5, -value / 12)) end)
 
@@ -165,7 +165,7 @@ function redraw()
   screen.level(10)
   screen.move(5, 62)
   screen.text("> " .. my_string)
-  
+
   if show_info then
     screen.font_face(25)
     screen.font_size(6)
@@ -211,7 +211,7 @@ function redraw()
       screen.text(gridy_choices[1] .. " " .. gridy_choices[2])
     elseif info_focus == 4 then
       -- show snap slots
-      -- dim for unused, mid for "has data", bright for current 
+      -- dim for unused, mid for "has data", bright for current
     end
     screen.stroke()
   end
@@ -255,7 +255,7 @@ function g.key(x, y, z)
     local y_scaled = util.linlin(1, 8, params:get_range(grid_choicey)[1], params:get_range(grid_choicey)[2], y)
     params:set(grid_choicex, x_scaled)
     params:set(grid_choicey, y_scaled)
-    
+
     last_x[1] = x
     last_y[1] = y
   elseif x >= 9 and z == 1 then
@@ -267,7 +267,7 @@ function g.key(x, y, z)
     local y_scaled = util.linlin(1, 8, params:get_range(grid_choicey)[1], params:get_range(grid_choicey)[2], y)
     params:set(grid_choicex, x_scaled)
     params:set(grid_choicey, y_scaled)
-    
+
     last_x[2] = x
     last_y[2] = y
   end
@@ -314,7 +314,7 @@ function keyboard.code(code,value)
       end
     end
   end
-  
+
   if keyboard.shift() and value == 1 then
     -- script controls
     if code == "G" then
@@ -371,14 +371,10 @@ function keyboard.code(code,value)
     elseif code == "RIGHT" then
       if show_info then
         info_focus = util.clamp(info_focus + 1, 1, 3)
-      else
-        track = util.clamp(track + 1, 1, 4)
       end
     elseif code == "LEFT" then
       if show_info then
         info_focus = util.clamp(info_focus - 1, 1, 3)
-      else
-        track = util.clamp(track -1, 1, 4)
       end
     elseif code == "ENTER" then
       -- parse string
@@ -401,7 +397,7 @@ function keyboard.code(code,value)
         gridx_choices[x] = controls[n][v]
       elseif command[1] == "gridy" then
         local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
-        gridy_choices[x] = controls[n][v] 
+        gridy_choices[x] = controls[n][v]
       elseif command[1] == "stop" then
         for i = 1, 4 do
           params:set(i .. "gate", 0)
@@ -429,7 +425,7 @@ function keyboard.code(code,value)
     end
     is_dirty = true
   end
-  
+
 end
 
 function rerun()
