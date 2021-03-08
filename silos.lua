@@ -46,6 +46,7 @@ local gridx_choices = {"1spread", "2spread"}
 local gridy_choices = {"1jitter", "2jitter"}
 -- for screen redraw
 local is_dirty = true
+local start_time = util.time()
 -- for parameter snapshots
 local snaps = {}
 for i = 1, 4 do
@@ -151,6 +152,17 @@ end
 
 function redraw()
   screen.clear()
+  -- splash screen type logo thing
+  if util.time() - start_time < 1.5 then
+    screen.display_png("/home/we/dust/code/silos/silos4.png", 0, 0)
+    screen.font_face(25)
+    screen.font_size(6)
+    screen.level(0)
+    screen.move(123, 60)
+    screen.text_right("silos")
+    screen.stroke()
+  else
+
   screen.font_face(1)
   screen.font_size(8)
   screen.level(10)
@@ -216,7 +228,11 @@ function redraw()
     screen.stroke()
   end
   screen.update()
-  is_dirty = false
+  if util.time() - start_time < 1.5 then
+    is_dirty = true
+  else
+    is_dirty = false
+  end
 end
 
 -- arc ------------
