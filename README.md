@@ -51,4 +51,4 @@ Current commands:
         * page 1 = track parameter values
         * page 2 = encoder/arc assignments
         * page 3 = gridx/y assignments
-    * left and right arrow keys navigate tracks
+        
