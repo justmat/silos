@@ -1,6 +1,6 @@
 # silos
 a live granualr instrument for norns
-
+![](assets/silos.png)
 —————
 
 Current commands:
