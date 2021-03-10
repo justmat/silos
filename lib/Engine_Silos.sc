@@ -7,6 +7,8 @@ Engine_Silos : CroneEngine {
   var <voices;
   var <phases;
   var <levels;
+  var effect;
+  var effectBus;
 
   *new { arg context, doneCallback;
     ^super.new(context, doneCallback);
@@ -37,13 +39,15 @@ Engine_Silos : CroneEngine {
     }).add;
 
     SynthDef(\synth, {
-      arg out, phase_out, level_out, buf,
+      arg out, effectBus, phase_out, level_out, buf,
       gate=0, pos=0, speed=1, jitter=0,
-      size=0.1, density=0, pitch=1, spread=0, gain=1, envscale=1,
-      freeze=0, t_reset_pos=0;
+      size=0.1, density=0, density_mod_amt=0, pitch=1, spread=0, gain=1, envscale=1,
+      freeze=0, t_reset_pos=0, send=0;
 
       var grain_trig;
       var jitter_sig;
+      var trig_rnd;
+      var density_mod;
       var buf_dur;
       var pan_sig;
       var buf_pos;
@@ -51,8 +55,10 @@ Engine_Silos : CroneEngine {
       var sig;
       var level;
       
-      
-      grain_trig = Impulse.kr(density);
+      trig_rnd = LFNoise1.kr(density);
+      density_mod = density * (2**(trig_rnd * density_mod_amt));      
+      grain_trig = Impulse.kr(density_mod);
+
       buf_dur = BufDur.kr(buf);
 
       pan_sig = TRand.kr(
@@ -84,9 +90,22 @@ Engine_Silos : CroneEngine {
 
       Out.kr(phase_out, pos_sig);
       Out.kr(level_out, level); // ignore gain for level out
+      Out.ar(effectBus, sig * level * send);
+    }).add;
+    
+    SynthDef(\effect, {
+      arg in, out, delayTime=2.0, damp=0.1, size=4.0, diff=0.7, feedback=0.2, modDepth=0.1, modFreq=0.1, delayVol=1.0;
+      var sig = In.ar(in, 2);
+      sig = Greyhole.ar(sig, delayTime, damp, size, diff, feedback, modDepth, modFreq);
+      Out.ar(out, sig * delayVol);
     }).add;
 
     context.server.sync;
+    
+    // delay bus
+    effectBus = Bus.audio(context.server, 2);
+    
+    effect = Synth.new(\effect, [\in, effectBus.index, \out, context.out_b.index], target: context.xg);
 
     phases = Array.fill(num_voices, { arg i; Bus.control(context.server); });
     levels = Array.fill(num_voices, { arg i; Bus.control(context.server); });
@@ -96,6 +115,7 @@ Engine_Silos : CroneEngine {
     voices = Array.fill(num_voices, { arg i;
       Synth.new(\synth, [
         \out, context.out_b.index,
+        \effectBus, effectBus.index,
         \phase_out, phases[i].index,
         \level_out, levels[i].index,
         \buf, buffers[i],
@@ -110,6 +130,15 @@ Engine_Silos : CroneEngine {
     });
 
     context.server.sync;
+    
+    this.addCommand("delay_time", "f", { arg msg; effect.set(\delayTime, msg[1]); });
+    this.addCommand("delay_damp", "f", { arg msg; effect.set(\damp, msg[1]); });
+    this.addCommand("delay_size", "f", { arg msg; effect.set(\size, msg[1]); });
+    this.addCommand("delay_diff", "f", { arg msg; effect.set(\diff, msg[1]); });
+    this.addCommand("delay_fdbk", "f", { arg msg; effect.set(\feedback, msg[1]); });
+    this.addCommand("delay_mod_depth", "f", { arg msg; effect.set(\modDepth, msg[1]); });
+    this.addCommand("delay_mod_freq", "f", { arg msg; effect.set(\modFreq, msg[1]); });
+    this.addCommand("delay_volume", "f", { arg msg; effect.set(\delayVol, msg[1]); });
 
     this.addCommand("read", "is", { arg msg;
       var voice = msg[1] - 1;
@@ -183,6 +212,11 @@ Engine_Silos : CroneEngine {
       var voice = msg[1] - 1;
       voices[voice].set(\envscale, msg[2]);
     });
+    
+    this.addCommand("send", "if", { arg msg;
+    var voice = msg[1] -1;
+    voices[voice].set(\send, msg[2]);
+    });
 
     num_voices.do({ arg i;
       this.addPoll(("phase_" ++ (i + 1)).asSymbol, {
@@ -203,5 +237,7 @@ Engine_Silos : CroneEngine {
     levels.do({ arg bus; bus.free; });
     buffers.do({ arg b; b.free; });
     recorders.do({ arg r; r.free; });
+    effect.free;
+    effectBus.free;
   }
 }
