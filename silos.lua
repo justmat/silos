@@ -13,9 +13,6 @@ local tabutil = require 'tabutil'
 
 local a = arc.connect(1)
 local g = grid.connect(1)
--- for grid
-local last_x = { 4, 12 }
-local last_y = { 4, 4 }
 -- for keyboard input
 local my_string = ""
 local history = {}
@@ -41,12 +38,13 @@ for i = 1, 4 do
 end
 -- current control choices for enc/arc/grid
 local enc_choices = {"1gain", "1position", "1speed"}
-local arc_choices = {"1jitter", "1size", "1density", "1pitch"}
+local arc_choices = {"1jitter", "1spread", "1density", "1pitch"}
 local gridx_choices = {"1spread", "2spread"}
 local gridy_choices = {"1jitter", "2jitter"}
 -- for screen redraw
 local is_dirty = true
 local start_time = util.time()
+local walk = 123
 -- for parameter snapshots
 local snaps = {}
 for i = 1, 4 do
@@ -121,6 +119,11 @@ function init()
   norns_redraw_timer.time = 0.025
   norns_redraw_timer.event = function() if is_dirty then redraw() end end
   norns_redraw_timer:start()
+  -- grid redraw metro
+  local grid_redraw_timer = metro.init()
+  grid_redraw_timer.time = 0.025
+  grid_redraw_timer.event = function() g.redraw() end
+  grid_redraw_timer:start()
 end
 
 -- norns hardware ----------
@@ -153,16 +156,18 @@ end
 function redraw()
   screen.clear()
   -- splash screen type logo thing
-  if util.time() - start_time < 1.5 then
-    screen.display_png("/home/we/dust/code/silos/silos4.png", 0, 0)
-    screen.font_face(25)
-    screen.font_size(6)
-    screen.level(0)
-    screen.move(123, 60)
-    screen.text_right("silos")
+  if util.time() - start_time < 3.2 then
+    screen.display_png("/home/we/dust/code/silos/assets/silos4.png", 0, 0)
+    screen.aa(1)
+    screen.font_face(34)
+    screen.font_size(32)
+    screen.level(4)
+    screen.move(walk, 61)
+    screen.text("silos")
     screen.stroke()
+    walk = walk - 2
   else
-
+    screen.aa(0)
     screen.font_face(1)
     screen.font_size(8)
     screen.level(10)
@@ -177,7 +182,6 @@ function redraw()
     screen.level(10)
     screen.move(5, 62)
     screen.text("> " .. my_string)
-
     if show_info then
       screen.font_face(25)
       screen.font_size(6)
@@ -229,7 +233,7 @@ function redraw()
     screen.stroke()
   end
   screen.update()
-  if util.time() - start_time < 1.5 then
+  if util.time() - start_time < 3.2 then
     is_dirty = true
   else
     is_dirty = false
@@ -266,27 +270,23 @@ function g.key(x, y, z)
   if x <= 8  and z == 1 then
     -- left x/y pad
     -- scale values and set selected params
-    local grid_choicex = control_choices[params:get("1gridx")]
-    local grid_choicey = control_choices[params:get("1gridy")]
+    local grid_choicex = gridx_choices[1]
+    local grid_choicey = gridy_choices[1]
     local x_scaled = util.linlin(1, 8, params:get_range(grid_choicex)[1], params:get_range(grid_choicex)[2], x)
     local y_scaled = util.linlin(1, 8, params:get_range(grid_choicey)[1], params:get_range(grid_choicey)[2], y)
     params:set(grid_choicex, x_scaled)
     params:set(grid_choicey, y_scaled)
 
-    last_x[1] = x
-    last_y[1] = y
   elseif x >= 9 and z == 1 then
     -- right x/y pad
     -- scale values and set params
-    local grid_choicex = control_choices[params:get("2gridx")]
-    local grid_choicey = control_choices[params:get("2gridy")]
+    local grid_choicex = gridx_choices[2]
+    local grid_choicey = gridy_choices[2]
     local x_scaled = util.linlin(9, 16, params:get_range(grid_choicex)[1], params:get_range(grid_choicex)[2], x)
     local y_scaled = util.linlin(1, 8, params:get_range(grid_choicey)[1], params:get_range(grid_choicey)[2], y)
     params:set(grid_choicex, x_scaled)
     params:set(grid_choicey, y_scaled)
 
-    last_x[2] = x
-    last_y[2] = y
   end
   g.redraw()
   is_dirty = true
@@ -296,15 +296,44 @@ end
 function g.redraw()
   g:all(0)
 
-  for i = 1, 8 do
-    g:led(i, last_y[1], 2)
-    g:led(last_x[1], i, 2)
-    g:led(i + 8, last_y[2], 2)
-    g:led(last_x[2], i, 2)
-  end
+    local x_scaled = util.linlin(params:get_range(gridx_choices[1])[1],
+      params:get_range(gridx_choices[1])[2],
+      1,
+      8,
+      params:get(gridx_choices[1]))
+  
+    local y_scaled = util.linlin(params:get_range(gridy_choices[1])[1],
+      params:get_range(gridy_choices[1])[2],
+      1,
+      8,
+      params:get(gridy_choices[1]))
+    
+    local x_scaled2 = util.linlin(params:get_range(gridx_choices[2])[1],
+      params:get_range(gridx_choices[2])[2],
+      9,
+      16,
+      params:get(gridx_choices[2]))
+  
+    local y_scaled2 = util.linlin(params:get_range(gridy_choices[2])[1],
+      params:get_range(gridy_choices[2])[2],
+      1,
+      8,
+      params:get(gridy_choices[2]))
+  
+    x_scaled = math.floor(x_scaled + 0.5)
+    y_scaled = math.floor(y_scaled + 0.5)
+    x_scaled2 = math.floor(x_scaled2 + 0.5)
+    y_scaled2 = math.floor(y_scaled2 + 0.5)
+    
+    for i = 1, 8 do
+      g:led(i, y_scaled, 2)
+      g:led(x_scaled, i, 2)
+      g:led(i + 8, y_scaled2, 2)
+      g:led(x_scaled2, i, 2)
+    end
 
-  g:led(last_x[1], last_y[1], 10)
-  g:led(last_x[2], last_y[2], 10)
+    g:led(x_scaled, y_scaled, 10)
+    g:led(x_scaled2, y_scaled2, 10)
 
   g:refresh()
 end
@@ -398,8 +427,12 @@ function keyboard.code(code,value)
       print(my_string)
       local command = split_string(my_string)
       --print(#command)
-
-      if command[1] == "rrand" then
+      if command[1] == "rand" then
+        local track, control, p = tonumber(command[2]), tonumber(command[3]), controls[track][control]
+        local low, high = params:get_range(p)[1], tonumber(params:get_range(p)[2])
+        local n = math.random(low, high)
+        params:set(controls[track][control], n)
+      elseif command[1] == "rrand" then
         local low, high, track, control = tonumber(command[2]), tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
         local n = math.random(low, high)
         params:set(controls[track][control], n)
@@ -432,7 +465,7 @@ function keyboard.code(code,value)
             params:set(controls[t][i], snaps[t][snap_id][i])
           end
         end
-      elseif tabutil.contains(controls[track], command[2] .. command[1]) then
+      elseif tabutil.contains(controls[command[2]], command[2] .. command[1]) then
         local v = tonumber(command[3])
         params:set(command[2] .. command[1], v)
       end
