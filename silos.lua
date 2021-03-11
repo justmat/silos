@@ -31,11 +31,28 @@ for i = 1, 4 do
     i .. "speed",
     i .. "jitter",
     i .. "size",
-    i .. "density",
     i .. "pitch",
-    i .. "spread"
+    i .. "fdbk",
+    i .. "density",
+    i .. "dispersal",
+    i .. "spread",
+    i .. "send"
   }
 end
+
+local fx_controls = {
+  "verbgain",
+  "time",
+  "verbsize",
+  "damp",
+  "diff",
+  "mod_depth",
+  "mod_freq",
+  "lowx",
+  "midx",
+  "highx"
+  
+}
 -- current control choices for enc/arc/grid
 local enc_choices = {"1gain", "1position", "1speed"}
 local arc_choices = {"1jitter", "1spread", "1density", "1pitch"}
@@ -74,7 +91,7 @@ function init()
 
   params:add_separator()
   for i = 1, 4 do
-    params:add_group("track " .. i, 10)
+    params:add_group("track " .. i, 13)
 
     params:add_number(i .. "gate", i .. " gate", 0, 1, 0)
     params:set_action(i .. "gate", function(value) engine.gate(i, value) end)
@@ -88,24 +105,74 @@ function init()
     params:add_taper(i .. "position", i .. " position", 0, 1, 0.001, 0)
     params:set_action(i .. "position", function(value)  engine.seek(i, value) end)
 
-    params:add_taper(i .. "speed", i .. " speed", -300, 300, 0, 0, "%")
+    params:add_taper(i .. "speed", i .. " speed", -300, 300, 100, 0, "%")
     params:set_action(i .. "speed", function(value) engine.speed(i, value / 100) end)
 
-    params:add_taper(i .. "jitter", i .. " jitter", 0, 500, 30, 5, "ms")
+    params:add_taper(i .. "jitter", i .. " jitter", 0, 500, 0, 5, "ms")
     params:set_action(i .. "jitter", function(value) engine.jitter(i, value / 1000) end)
 
     params:add_taper(i .. "size", i .. " size", 1, 500, 150, 5, "ms")
     params:set_action(i .. "size", function(value) engine.size(i, value / 1000) end)
 
-    params:add_taper(i .. "density", i .. " density", 0, 512, 10, 6, "hz")
+    params:add_taper(i .. "density", i .. " density", 0, 512, 32, 6, "hz")
     params:set_action(i .. "density", function(value) engine.density(i, value) end)
+    
+    params:add_control(i.."dispersal", i.." dispersal", controlspec.new(0.00, 1.00, "lin", 0, 0))
+    params:set_action(i.."dispersal", function(v) engine.density_mod_amt(i, v) end)
 
     params:add_taper(i .. "pitch", i .. " pitch", -24, 24, 0, 0, "st")
     params:set_action(i .. "pitch", function(value) engine.pitch(i, math.pow(0.5, -value / 12)) end)
 
     params:add_taper(i .. "spread", i .. " spread", 0, 100, 35, 0, "%")
     params:set_action(i .. "spread", function(value) engine.spread(i, value / 100) end)
+    
+    params:add_control(i .. "fdbk", i .." fdbk", controlspec.new(0.0, 1.0, "lin", 0.01, 0))
+    params:set_action(i .. "fdbk", function(value) engine.pre_level(i, value) end)
+    
+    params:add_control(i .. "send", i .." send", controlspec.new(0.0, 1.0, "lin", 0.01, 0))
+    params:set_action(i .. "send", function(value) engine.send(i, value) end)
   end
+  
+  params:add_separator()
+   params:add_group("reverb", 12)
+  -- effect controls
+  -- delay time
+  params:add_control("time", "*" .. "time", controlspec.new(0.0, 60.0, "lin", .01, 60, ""))
+  params:set_action("time", function(value) engine.time(value) end)
+  -- delay size
+  params:add_control("verbsize", "*" .. "size", controlspec.new(0.5, 5.0, "lin", 0.01, 1.67, ""))
+  params:set_action("verbsize", function(value) engine.verbsize(value) end)
+  -- dampening 
+  params:add_control("damp", "*" .. "damp", controlspec.new(0.0, 1.0, "lin", 0.01, 0.3144, ""))
+  params:set_action("damp", function(value) engine.damp(value) end)
+  -- diffusion
+  params:add_control("diff", "*" .. "diff", controlspec.new(0.0, 1.0, "lin", 0.01, 0.71, ""))
+  params:set_action("diff", function(value) engine.diff(value) end)
+  -- mod depth
+  params:add_control("mod_depth", "*" .. "mod depth", controlspec.new(0.0, 1.0, "lin", 0, .66, ""))
+  params:set_action("mod_depth", function(value) engine.mod_depth(value) end)
+  -- mod rate
+  params:add_control("mod_freq", "*" .. "mod freq", controlspec.new(0.0, 10.0, "lin", 0.01, 3.00, "hz"))
+  params:set_action("mod_freq", function(value) engine.mod_freq(value) end)
+  -- reverb eq
+  params:add_control("lowx", "*" .. "lowx", controlspec.new(0.0, 1.0, "lin", 0, 0.8, ""))
+  params:set_action("lowx", function(value) engine.low(value) end)
+  
+  params:add_control("midx", "*" .. "midx", controlspec.new(0.0, 1.0, "lin", 0, 0.70, ""))
+  params:set_action("midx", function(value) engine.mid(value) end)
+  
+  params:add_control("highx", "*" .. "highx", controlspec.new(0.0, 1.0, "lin", 0, 0, ""))
+  params:set_action("highx", function(value) engine.high(value) end)
+  
+  params:add_control("lowcross", "*" .. "low crossover", controlspec.new(100, 6000.0, "lin", 0, 2450.0, ""))
+  params:set_action("lowcross", function(value) engine.lowcut(value) end)
+  
+  params:add_control("highcross", "*" .. "high crossover", controlspec.new(1000.0, 10000.0, "lin", 0, 1024.0, ""))
+  params:set_action("highcross", function(value) engine.highcut(value) end)
+  -- reverb output volume
+  params:add_control("verbgain", "*" .. "gain", controlspec.new(0.0, 1.0, "lin", 0, 0.50, ""))
+  params:set_action("verbgain", function(value) engine.verbgain(value) end)
+
 
   params:bang()
 
@@ -171,12 +238,12 @@ function redraw()
     screen.font_face(1)
     screen.font_size(8)
     screen.level(10)
-    screen.move(126, 10)
+    screen.move(126, 6)
     screen.text_right(track)
-    screen.move(106, 10)
+    screen.move(106, 6)
     screen.level(params:get(track .. "gate") == 0 and 2 or 10)
     screen.text_right("g")
-    screen.move(116, 10)
+    screen.move(116, 6)
     screen.level(params:get(track .. "record") == 0 and 2 or 10)
     screen.text_right("r")
     screen.level(10)
@@ -190,20 +257,49 @@ function redraw()
         screen.move(1, 10)
         screen.text(1 .. " gain " .. string.format("%.1f", params:get(track .."gain")))
         screen.move(1, 18)
-        screen.text(2 .. " position " .. string.format("%.2f", params:get(track .. "position")))
+        screen.text(2 .. " position " .. string.format("%.1f", params:get(track .. "position")))
         screen.move(1, 26)
         screen.text(3 .. " speed " .. string.format("%.1f", params:get(track .. "speed")))
         screen.move(1, 34)
         screen.text(4 .. " jitter " .. string.format("%.1f", params:get(track .. "jitter")))
         screen.move(1, 42)
         screen.text(5 .. " size " .. string.format("%.1f", params:get(track .. "size")))
-        screen.move(65, 35)
-        screen.text(6 .. " density " .. string.format("%.1f", params:get(track .. "density")))
+        screen.move(1, 50)
+        screen.text(6 .. " pitch " .. string.format("%.1f", params:get(track .. "pitch")))
+        screen.move(65, 18)
+        screen.text(7 .. " fdbk " .. string.format("%.1f", params:get(track .. "fdbk")))
+        screen.move(65, 26)
+        screen.text(8 .. " density " .. string.format("%.1f", params:get(track .. "density")))
+        screen.move(65, 34)
+        screen.text(9 .. " dispersal "..string.format("%.1f", params:get(track .. "dispersal")))
         screen.move(65, 42)
-        screen.text(7 .. " pitch " .. string.format("%.1f", params:get(track .. "pitch")))
+        screen.text(10 .. " spread " .. string.format("%.1f", params:get(track .. "spread")))
         screen.move(65, 50)
-        screen.text(8 .. " spread " .. string.format("%.1f", params:get(track .. "spread")))
+        screen.text(11 .. " send " .. string.format("%.1f", params:get(track .. "send")))
       elseif info_focus == 2 then
+        screen.move(40, 10)
+        screen.text("-reverb-")
+        screen.move(1, 18)
+        screen.text("1 gain " .. string.format("%.2f", params:get("verbgain")))
+        screen.move(1, 26)
+        screen.text("2 time " .. string.format("%.1f", params:get("time")))
+        screen.move(1, 34)
+        screen.text("3 size " .. string.format("%.2f", params:get("verbsize")))
+        screen.move(1, 42)
+        screen.text("4 damp " .. string.format("%.3f", params:get("damp")))
+        screen.move(1, 50)
+        screen.text("5 diff " .. string.format("%.3f", params:get("diff")))
+        screen.move(65, 18)
+        screen.text("6 mod depth " .. string.format("%.2f", params:get("mod_depth")))
+        screen.move(65, 26)
+        screen.text("7 mod freq " .. string.format("%.2f", params:get("mod_freq")))
+        screen.move(65, 34)
+        screen.text("8 lowx " .. string.format("%.2f", params:get("low")))
+        screen.move(65, 42)
+        screen.text("9 midx " .. string.format("%.2f", params:get("mid")))
+        screen.move(65, 50)
+        screen.text("10 highx " .. string.format("%.2f", params:get("high")))
+      elseif info_focus == 3 then
         screen.move(1, 18)
         screen.text("enc:")
         screen.move(20, 18)
@@ -216,7 +312,7 @@ function redraw()
         screen.text(arc_choices[1] .. " " .. arc_choices[2])
         screen.move(20, 48)
         screen.text(arc_choices[3] .. " " .. arc_choices[4])
-      elseif info_focus == 3 then
+      elseif info_focus == 4 then
         screen.move(1, 18)
         screen.text("gridx:")
         screen.move(28, 18)
@@ -225,9 +321,11 @@ function redraw()
         screen.text("gridy:")
         screen.move(28, 38)
         screen.text(gridy_choices[1] .. " " .. gridy_choices[2])
-      elseif info_focus == 4 then
+      elseif info_focus == 5 then
         -- show snap slots
         -- dim for unused, mid for "has data", bright for current
+        screen.move(1, 18)
+        screen.text("1        2        3        4")
       end
     end
     screen.stroke()
@@ -341,7 +439,7 @@ end
 -- keyboard input ----------
 
 function keyboard.char(character)
-  if keyboard.shift() then
+  if keyboard.alt() then
   else
     my_string = my_string .. character -- add characters to my string
     is_dirty = true
@@ -361,7 +459,7 @@ function keyboard.code(code,value)
     end
   end
 
-  if keyboard.shift() and value == 1 then
+  if keyboard.alt() and value == 1 or value == 2 then
     -- script controls
     if code == "G" then
     -- gate on for selected track
@@ -416,11 +514,11 @@ function keyboard.code(code,value)
       end
     elseif code == "RIGHT" then
       if show_info then
-        info_focus = util.clamp(info_focus + 1, 1, 3)
+        info_focus = util.clamp(info_focus + 1, 1, 4)
       end
     elseif code == "LEFT" then
       if show_info then
-        info_focus = util.clamp(info_focus - 1, 1, 3)
+        info_focus = util.clamp(info_focus - 1, 1, 4)
       end
     elseif code == "ENTER" then
       -- parse string
@@ -448,26 +546,35 @@ function keyboard.code(code,value)
       elseif command[1] == "gridy" then
         local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
         gridy_choices[x] = controls[n][v]
-      elseif command[1] == "stop" then
+      elseif command[1] == "g" or command[1] == "gate" then
         for i = 1, 4 do
-          params:set(i .. "gate", 0)
+          local state = tonumber(command[i + 1])
+          params:set(i .. "gate", state)
+        end
+      elseif command[1] == "r" or command[1] == "record" then
+        for i = 1, 4 do
+          local state = tonumber(command[i + 1])
+          params:set(i .. "record", state)
         end
       elseif command[1] == "s" or command[1] == "snap" then
         local snap_id, t = tonumber(command[2]), tonumber(command[3])
         snaps[t][snap_id] = {}
-        for i = 1, 8 do
+        for i = 1, #controls[t] do
           table.insert(snaps[t][snap_id], params:get(controls[t][i]))
         end
-      elseif command[1] == "r" or command[1] == "recall" then
+      elseif command[1] == "l" or command[1] == "load" then
         local snap_id, t = tonumber(command[2]), tonumber(command[3])
         if #snaps[t][snap_id] > 0 then
-          for i = 1, 8 do
+          for i = 1, #controls[t] do
             params:set(controls[t][i], snaps[t][snap_id][i])
           end
         end
-      elseif tabutil.contains(controls[command[2]], command[2] .. command[1]) then
-        local v = tonumber(command[3])
-        params:set(command[2] .. command[1], v)
+      elseif command[1] == "set" then
+        local t, c, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
+        params:set(controls[t][c], v)
+      elseif command[1] == "reverb" then
+        local c, v = tonumber(command[2]), tonumber(command[3])
+        params:set(fx_controls[c], v)
       end
       table.insert(history, my_string) -- append the command to history
       my_string = "" -- clear my_string
@@ -475,7 +582,6 @@ function keyboard.code(code,value)
     end
     is_dirty = true
   end
-
 end
 
 function rerun()
