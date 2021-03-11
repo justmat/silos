@@ -94,15 +94,15 @@ Engine_Silos : CroneEngine {
     }).add;
     
     SynthDef(\effect, {
-      arg in, out, delayTime=2.0, damp=0.1, size=4.0, diff=0.7, feedback=0.2, modDepth=0.1, modFreq=0.1, delayVol=1.0;
+      arg in, out, verbgain=1, time=2.0, damp=0.1, verbsize=4.0, diff=0.7, modDepth=0.1, modFreq=0.1, low=0.5, mid=1, high=1, lowcut=5000, highcut=2000;
       var sig = In.ar(in, 2);
-      sig = Greyhole.ar(sig, delayTime, damp, size, diff, feedback, modDepth, modFreq);
-      Out.ar(out, sig * delayVol);
+      sig = JPverb.ar(sig, time, damp, verbsize, diff, modDepth, modFreq, low, mid, high, lowcut, highcut);
+      Out.ar(out, sig * verbgain);
     }).add;
 
     context.server.sync;
     
-    // delay bus
+    // reverb bus
     effectBus = Bus.audio(context.server, 2);
     
     effect = Synth.new(\effect, [\in, effectBus.index, \out, context.out_b.index], target: context.xg);
@@ -131,14 +131,18 @@ Engine_Silos : CroneEngine {
 
     context.server.sync;
     
-    this.addCommand("delay_time", "f", { arg msg; effect.set(\delayTime, msg[1]); });
-    this.addCommand("delay_damp", "f", { arg msg; effect.set(\damp, msg[1]); });
-    this.addCommand("delay_size", "f", { arg msg; effect.set(\size, msg[1]); });
-    this.addCommand("delay_diff", "f", { arg msg; effect.set(\diff, msg[1]); });
-    this.addCommand("delay_fdbk", "f", { arg msg; effect.set(\feedback, msg[1]); });
-    this.addCommand("delay_mod_depth", "f", { arg msg; effect.set(\modDepth, msg[1]); });
-    this.addCommand("delay_mod_freq", "f", { arg msg; effect.set(\modFreq, msg[1]); });
-    this.addCommand("delay_volume", "f", { arg msg; effect.set(\delayVol, msg[1]); });
+    this.addCommand("time", "f", { arg msg; effect.set(\delayTime, msg[1]); });
+    this.addCommand("damp", "f", { arg msg; effect.set(\damp, msg[1]); });
+    this.addCommand("verbsize", "f", { arg msg; effect.set(\verbsize, msg[1]); });
+    this.addCommand("diff", "f", { arg msg; effect.set(\diff, msg[1]); });
+    this.addCommand("mod_depth", "f", { arg msg; effect.set(\modDepth, msg[1]); });
+    this.addCommand("mod_freq", "f", { arg msg; effect.set(\modFreq, msg[1]); });
+    this.addCommand("low", "f", { arg msg; effect.set(\low, msg[1]); });
+    this.addCommand("mid", "f", { arg msg; effect.set(\mid, msg[1]); });
+    this.addCommand("high", "f", { arg msg; effect.set(\high, msg[1]); });
+    this.addCommand("lowcut", "f", { arg msg; effect.set(\lowcut, msg[1]); });
+    this.addCommand("highcut", "f", { arg msg; effect.set(\highcut, msg[1]); });
+    this.addCommand("verbgain", "f", { arg msg; effect.set(\verbgain, msg[1]); });
 
     this.addCommand("read", "is", { arg msg;
       var voice = msg[1] - 1;
@@ -191,6 +195,11 @@ Engine_Silos : CroneEngine {
     this.addCommand("density", "if", { arg msg;
       var voice = msg[1] - 1;
       voices[voice].set(\density, msg[2]);
+    });
+    
+    this.addCommand("density_mod_amt", "if", { arg msg;
+      var voice = msg[1] - 1;
+      voices[voice].set(\density_mod_amt, msg[2]);
     });
 
     this.addCommand("pitch", "if", { arg msg;
