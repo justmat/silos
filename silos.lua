@@ -294,28 +294,38 @@ function redraw()
         screen.move(65, 26)
         screen.text("7 mod freq " .. string.format("%.2f", params:get("mod_freq")))
         screen.move(65, 34)
-        screen.text("8 lowx " .. string.format("%.2f", params:get("low")))
+        screen.text("8 lowx " .. string.format("%.2f", params:get("lowx")))
         screen.move(65, 42)
-        screen.text("9 midx " .. string.format("%.2f", params:get("mid")))
+        screen.text("9 midx " .. string.format("%.2f", params:get("midx")))
         screen.move(65, 50)
-        screen.text("10 highx " .. string.format("%.2f", params:get("high")))
+        screen.text("10 highx " .. string.format("%.2f", params:get("highx")))
       elseif info_focus == 3 then
+        screen.move(40, 10)
+        screen.text("-controls-")
         screen.move(1, 18)
         screen.text("enc:")
         screen.move(20, 18)
-        screen.text(enc_choices[1] .. " " .. enc_choices[2])
+        screen.text(enc_choices[1])
         screen.move(20, 28)
-        screen.text( enc_choices[3])
-        screen.move(1, 38)
-        screen.text("arc:")
+        screen.text( enc_choices[2])
         screen.move(20, 38)
-        screen.text(arc_choices[1] .. " " .. arc_choices[2])
-        screen.move(20, 48)
-        screen.text(arc_choices[3] .. " " .. arc_choices[4])
+        screen.text(enc_choices[3])
+        screen.move(64, 18)
+        screen.text("arc:")
+        screen.move(84, 18)
+        screen.text(arc_choices[1])
+        screen.move(84, 28)
+        screen.text(arc_choices[2])
+        screen.move(84, 38)
+        screen.text(arc_choices[3])
+        screen.move(84, 48)
+        screen.text(arc_choices[4])
       elseif info_focus == 4 then
-        screen.move(1, 18)
+        screen.move(40, 10)
+        screen.text("-controls-")
+        screen.move(1, 28)
         screen.text("gridx:")
-        screen.move(28, 18)
+        screen.move(28, 28)
         screen.text(gridx_choices[1] .. " " .. gridx_choices[2])
         screen.move(1, 38)
         screen.text("gridy:")
@@ -323,9 +333,17 @@ function redraw()
         screen.text(gridy_choices[1] .. " " .. gridy_choices[2])
       elseif info_focus == 5 then
         -- show snap slots
-        -- dim for unused, mid for "has data", bright for current
-        screen.move(1, 18)
-        screen.text("1        2        3        4")
+        -- dim for unused, bright for contains data
+        screen.move(40, 10)
+        screen.text("-snapshots-")
+        for i = 1, 4 do
+          for j = 1, 16 do
+            screen.level(#snaps[i][j] > 0 and 10 or 2 )
+            screen.rect(0.5 + j * 8, 10 + i * 8, 4, 4)
+            screen.fill()
+            screen.stroke()
+          end
+        end
       end
     end
     screen.stroke()
@@ -476,11 +494,11 @@ function keyboard.code(code,value)
       else
         params:set(track .. "record", 0)
       end
-    elseif code == "TAB" then
+    --[[elseif code == "TAB" then
       for i = 2, #controls[track] do
         local l, h = params:get_range(controls[track][i])[1], params:get_range(controls[track][i])[2]
         params:set(controls[track][i], math.random(l, h))
-      end
+      end]]
     end
   end
   
@@ -517,11 +535,11 @@ function keyboard.code(code,value)
       end
     elseif code == "RIGHT" then
       if show_info then
-        info_focus = util.clamp(info_focus + 1, 1, 4)
+        info_focus = util.clamp(info_focus + 1, 1, 5)
       end
     elseif code == "LEFT" then
       if show_info then
-        info_focus = util.clamp(info_focus - 1, 1, 4)
+        info_focus = util.clamp(info_focus - 1, 1, 5)
       end
     elseif code == "ENTER" then
       -- parse string
@@ -572,9 +590,9 @@ function keyboard.code(code,value)
             params:set(controls[t][i], snaps[t][snap_id][i])
           end
         end
-      elseif command[1] == "set" then
-        local t, c, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
-        params:set(controls[t][c], v)
+      elseif tabutil.contains(controls[track], command[2] .. command[1]) then
+        local v = tonumber(command[3])
+        params:set(command[2] .. command[1], v)
       elseif command[1] == "reverb" then
         local c, v = tonumber(command[2]), tonumber(command[3])
         params:set(fx_controls[c], v)
