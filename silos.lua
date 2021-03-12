@@ -593,7 +593,7 @@ function keyboard.code(code,value)
       elseif tabutil.contains(controls[track], command[2] .. command[1]) then
         local v = tonumber(command[3])
         params:set(command[2] .. command[1], v)
-      elseif command[1] == "reverb" then
+      elseif command[1] == "fx" then
         local c, v = tonumber(command[2]), tonumber(command[3])
         params:set(fx_controls[c], v)
       end
