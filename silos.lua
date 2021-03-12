@@ -439,7 +439,7 @@ end
 -- keyboard input ----------
 
 function keyboard.char(character)
-  if keyboard.alt() then
+  if keyboard.ctrl() or keyboard.alt() then
   else
     my_string = my_string .. character -- add characters to my string
     is_dirty = true
@@ -459,7 +459,7 @@ function keyboard.code(code,value)
     end
   end
 
-  if keyboard.alt() and value == 1 or value == 2 then
+  if keyboard.ctrl() and value == 1 or value == 2 then
     -- script controls
     if code == "G" then
     -- gate on for selected track
@@ -476,8 +476,12 @@ function keyboard.code(code,value)
       else
         params:set(track .. "record", 0)
       end
+    end
+  end
+  
+  if keyboard.alt() and value == 1 or value == 2 then
     -- track select
-    elseif code == "1" then
+    if code == "1" then
       track = 1
     elseif code == "2" then
       track = 2
