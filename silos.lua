@@ -476,6 +476,11 @@ function keyboard.code(code,value)
       else
         params:set(track .. "record", 0)
       end
+    elseif code == "TAB" then
+      for i = 2, #controls[track] do
+        local l, h = params:get_range(controls[track][i])[1], params:get_range(controls[track][i])[2]
+        params:set(controls[track][i], math.random(l, h))
+      end
     end
   end
   
@@ -489,12 +494,6 @@ function keyboard.code(code,value)
       track = 3
     elseif code == "4" then
       track = 4
-    -- track randomize
-    elseif code == "TAB" then
-      for i = 2, 8 do
-        local l, h = params:get_range(controls[track][i])[1], params:get_range(controls[track][i])[2]
-        params:set(controls[track][i], math.random(l, h))
-      end
     end
   end
 
