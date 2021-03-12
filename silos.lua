@@ -278,7 +278,7 @@ function redraw()
         screen.text(11 .. " send " .. string.format("%.1f", params:get(track .. "send")))
       elseif info_focus == 2 then
         screen.move(40, 10)
-        screen.text("-reverb-")
+        screen.text("-fx-")
         screen.move(1, 18)
         screen.text("1 gain " .. string.format("%.2f", params:get("verbgain")))
         screen.move(1, 26)
