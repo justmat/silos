@@ -19,9 +19,12 @@ Current commands:
         * 3 = speed
         * 4 = jitter
         * 5 = size
-        * 6 = density
-        * 7 = pitch
-        * 8 = spread
+        * 6 = pitch
+        * 7 = fdbk
+        * 8 = density
+        * 9 = dispersal
+        * 10 = spread
+        * 11 = fx send
         * *nb: this list can be viewed in app by pressing ESC*
 
   * set parameters: 
