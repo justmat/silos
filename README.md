@@ -25,8 +25,8 @@ Current commands:
         * *nb: this list can be viewed in app by pressing ESC*
 
   * set parameters: 
-    * ``set track control_number value`` 
-      * ``set 2 5 150`` = set track 2 size to 150ms
+    * ``control_name track value`` 
+      * ``size 2 150`` = set track 2 size to 150ms
     * ``rand track control_number`` 
       * ``rand 1 8`` = set track 1 spread to a random value
     * ``rrand track control_number low high`` 
@@ -40,6 +40,10 @@ Current commands:
     * ``id`` = a number 1-16
     * ``snap`` and ``load`` have the aliases ``s`` and ``l`` for convenience 
       * ``s 1 1`` and ``l 1 1`` are both valid
+
+  * save and load state
+    * ``save_state``
+    * ``load_state``
 
   * key bindings
     * alt + g = toggle gate
