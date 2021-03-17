@@ -51,8 +51,8 @@ local fx_controls = {
   "lowx",
   "midx",
   "highx"
-  
 }
+
 -- current control choices for enc/arc/grid
 local enc_choices = {"1gain", "1position", "1speed"}
 local arc_choices = {"1jitter", "1spread", "1density", "1pitch"}
@@ -70,7 +70,14 @@ for i = 1, 4 do
     snaps[i][j] = {}
   end
 end
-
+-- for control macros
+local macro = {}
+local muls = {}
+for i = 1, 3 do
+  macro[i] = {}
+  muls[i] = {}
+end
+local is_macro = {false, false, false}
 
 function split_string(input_string, sep)
   -- seperates a string by whitespace
@@ -195,7 +202,9 @@ end
 
 -- norns hardware ----------
 function key(n, z)
-  if n == 2 and z == 1 then
+  if n == 1 and z == 1 then
+    show_info = not show_info
+  elseif n == 2 and z == 1 then
     -- gate on for selected track
     if params:get(track .. "gate") == 0 then
       params:set(track .. "gate", 1)
@@ -215,7 +224,13 @@ end
 
 
 function enc(n, d)
-  params:delta(enc_choices[n], d)
+  if is_macro[n] then
+    for i = 1, #macro[n] do
+      params:delta(macro[n][i], d * muls[n][i])
+    end
+  else
+    params:delta(enc_choices[n], d)
+  end
   is_dirty = true
 end
 
@@ -277,8 +292,8 @@ function redraw()
         screen.move(65, 50)
         screen.text(11 .. " send " .. string.format("%.1f", params:get(track .. "send")))
       elseif info_focus == 2 then
-        screen.move(40, 10)
-        screen.text("-fx-")
+        screen.move(54, 10)
+        screen.text_center("-fx-")
         screen.move(1, 18)
         screen.text("1 gain " .. string.format("%.2f", params:get("verbgain")))
         screen.move(1, 26)
@@ -300,8 +315,8 @@ function redraw()
         screen.move(65, 50)
         screen.text("10 highx " .. string.format("%.2f", params:get("highx")))
       elseif info_focus == 3 then
-        screen.move(40, 10)
-        screen.text("-controls-")
+        screen.move(54, 10)
+        screen.text_center("-controls-")
         screen.move(1, 18)
         screen.text("enc:")
         screen.move(20, 18)
@@ -321,8 +336,8 @@ function redraw()
         screen.move(84, 48)
         screen.text(arc_choices[4])
       elseif info_focus == 4 then
-        screen.move(40, 10)
-        screen.text("-controls-")
+        screen.move(54, 10)
+        screen.text_center("-controls-")
         screen.move(1, 28)
         screen.text("gridx:")
         screen.move(28, 28)
@@ -334,8 +349,8 @@ function redraw()
       elseif info_focus == 5 then
         -- show snap slots
         -- dim for unused, bright for contains data
-        screen.move(40, 10)
-        screen.text("-snapshots-")
+        screen.move(64, 10)
+        screen.text_center("-snapshots-")
         for i = 1, 4 do
           for j = 1, 16 do
             screen.level(#snaps[i][j] > 0 and 10 or 2 )
@@ -477,46 +492,35 @@ function keyboard.code(code,value)
     end
   end
 
-  if keyboard.ctrl() and value == 1 or value == 2 then
-    -- script controls
-    if code == "G" then
-    -- gate on for selected track
-      if params:get(track .. "gate") == 0 then
-        params:set(track .. "gate", 1)
-      else
-        params:set(track .. "gate", 0)
-      end
-
-    elseif code == "R" then
-      -- arm record
-      if params:get(track .. "record") == 0 then
-        params:set(track .. "record", 1)
-      else
-        params:set(track .. "record", 0)
-      end
-    --[[elseif code == "TAB" then
-      for i = 2, #controls[track] do
-        local l, h = params:get_range(controls[track][i])[1], params:get_range(controls[track][i])[2]
-        params:set(controls[track][i], math.random(l, h))
-      end]]
-    end
-  end
-  
-  if keyboard.alt() and value == 1 or value == 2 then
-    -- track select
-    if code == "1" then
-      track = 1
-    elseif code == "2" then
-      track = 2
-    elseif code == "3" then
-      track = 3
-    elseif code == "4" then
-      track = 4
-    end
-  end
-
   if value == 1 or value == 2 then -- 1 is down, 2 is held, 0 is release
-    if code == "BACKSPACE" then
+    if keyboard.ctrl() then
+      -- script controls
+      if code == "G" then
+        -- gate on for selected track
+        if params:get(track .. "gate") == 0 then
+          params:set(track .. "gate", 1)
+        else
+          params:set(track .. "gate", 0)
+        end
+
+      elseif code == "R" then
+        -- arm record
+        if params:get(track .. "record") == 0 then
+          params:set(track .. "record", 1)
+        else
+          params:set(track .. "record", 0)
+        end
+      elseif code == "1" then
+        track = 1
+      elseif code == "2" then
+        track = 2
+      elseif code == "3" then
+        track = 3
+      elseif code == "4" then
+        track = 4
+      end
+    
+    elseif code == "BACKSPACE" then
       my_string = my_string:sub(1, -2) -- erase characters from my_string
     elseif code == "UP" then
       if #history > 0 then -- make sure there's a history
@@ -545,10 +549,9 @@ function keyboard.code(code,value)
       -- parse string
       print(my_string)
       local command = split_string(my_string)
-      --print(#command)
       if command[1] == "rand" then
         local track, control, p = tonumber(command[2]), tonumber(command[3]), controls[track][control]
-        local low, high = params:get_range(p)[1], tonumber(params:get_range(p)[2])
+        local low, high = tonumber(params:get_range(p)[1]), tonumber(params:get_range(p)[2])
         local n = math.random(low, high)
         params:set(controls[track][control], n)
       elseif command[1] == "rrand" then
@@ -556,8 +559,13 @@ function keyboard.code(code,value)
         local n = math.random(low, high)
         params:set(controls[track][control], n)
       elseif command[1] == "enc" then
-        local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
-        enc_choices[x] = controls[n][v]
+        if command[3] == "macro" then
+          local e, state = tonumber(command[2]), tonumber(command[4])
+          is_macro[e] = state == 1 and true or false
+        else
+          local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
+          enc_choices[x] = controls[n][v]
+        end
       elseif command[1] == "arc" then
         local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
         arc_choices[x] = controls[n][v]
@@ -590,6 +598,21 @@ function keyboard.code(code,value)
             params:set(controls[t][i], snaps[t][snap_id][i])
           end
         end
+      elseif command[1] == "macro" then
+        local id = tonumber(command[2])
+        if command[3] == "clear" then
+          macro[id] = {}
+          --is_macro[3] = false
+        elseif command[3] == "fx" then
+          local id, control, mul = tonumber(command[2]), tonumber(command[4]), tonumber(command[5])
+          table.insert(macro[id], fx_controls[control])
+          table.insert(muls[id], mul)
+        else  
+          local id, track, control, mul = tonumber(command[2]), tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
+          table.insert(macro[id], controls[track][control])
+          table.insert(muls[id], mul)
+        end
+        print("macro length " .. #macro[3])
       elseif tabutil.contains(controls[track], command[2] .. command[1]) then
         local v = tonumber(command[3])
         params:set(command[2] .. command[1], v)
