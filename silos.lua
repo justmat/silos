@@ -53,31 +53,47 @@ local fx_controls = {
   "highx"
 }
 
+-- for saving state
+local silos = {}
 -- current control choices for enc/arc/grid
-local enc_choices = {"1gain", "1position", "1speed"}
-local arc_choices = {"1jitter", "1spread", "1density", "1pitch"}
-local gridx_choices = {"1spread", "2spread"}
-local gridy_choices = {"1jitter", "2jitter"}
+silos.enc_choices = {"1gain", "1position", "1speed"}
+silos.arc_choices = {"1jitter", "1spread", "1density", "1pitch"}
+silos.gridx_choices = {"1spread", "2spread"}
+silos.gridy_choices = {"1jitter", "2jitter"}
+-- for parameter silos.snapshots
+silos.snaps = {}
+for i = 1, 4 do
+  silos.snaps[i] = {}
+  for j = 1, 16 do
+    silos.snaps[i][j] = {}
+  end
+end
+-- for control silos.macross
+silos.macros = {}
+silos.muls = {}
+for i = 1, 3 do
+  silos.macros[i] = {}
+  silos.muls[i] = {}
+end
+silos.is_macro = {false, false, false}
+
 -- for screen redraw
 local is_dirty = true
 local start_time = util.time()
 local walk = 123
--- for parameter snapshots
-local snaps = {}
-for i = 1, 4 do
-  snaps[i] = {}
-  for j = 1, 16 do
-    snaps[i][j] = {}
-  end
+
+
+local function save_state()
+  tabutil.save(silos, paths.code .. "silos/lib/silos.state")
+  print("yep!")
 end
--- for control macros
-local macro = {}
-local muls = {}
-for i = 1, 3 do
-  macro[i] = {}
-  muls[i] = {}
+
+
+local function load_state()
+  tabutil.load((paths.code .. "silos/lib/silos.state"))
+  print("did it !!")
 end
-local is_macro = {false, false, false}
+
 
 function split_string(input_string, sep)
   -- seperates a string by whitespace
@@ -224,12 +240,12 @@ end
 
 
 function enc(n, d)
-  if is_macro[n] then
-    for i = 1, #macro[n] do
-      params:delta(macro[n][i], d * muls[n][i])
+  if silos.is_macro[n] then
+    for i = 1, #silos.macros[n] do
+      params:delta(silos.macros[n][i], d * silos.muls[n][i])
     end
   else
-    params:delta(enc_choices[n], d)
+    params:delta(silos.enc_choices[n], d)
   end
   is_dirty = true
 end
@@ -320,40 +336,40 @@ function redraw()
         screen.move(1, 18)
         screen.text("enc:")
         screen.move(20, 18)
-        screen.text(enc_choices[1])
+        screen.text(silos.enc_choices[1])
         screen.move(20, 28)
-        screen.text( enc_choices[2])
+        screen.text( silos.enc_choices[2])
         screen.move(20, 38)
-        screen.text(enc_choices[3])
+        screen.text(silos.enc_choices[3])
         screen.move(64, 18)
         screen.text("arc:")
         screen.move(84, 18)
-        screen.text(arc_choices[1])
+        screen.text(silos.arc_choices[1])
         screen.move(84, 28)
-        screen.text(arc_choices[2])
+        screen.text(silos.arc_choices[2])
         screen.move(84, 38)
-        screen.text(arc_choices[3])
+        screen.text(silos.arc_choices[3])
         screen.move(84, 48)
-        screen.text(arc_choices[4])
+        screen.text(silos.arc_choices[4])
       elseif info_focus == 4 then
         screen.move(54, 10)
         screen.text_center("-controls-")
         screen.move(1, 28)
         screen.text("gridx:")
         screen.move(28, 28)
-        screen.text(gridx_choices[1] .. " " .. gridx_choices[2])
+        screen.text(silos.gridx_choices[1] .. " " .. silos.gridx_choices[2])
         screen.move(1, 38)
         screen.text("gridy:")
         screen.move(28, 38)
-        screen.text(gridy_choices[1] .. " " .. gridy_choices[2])
+        screen.text(silos.gridy_choices[1] .. " " .. silos.gridy_choices[2])
       elseif info_focus == 5 then
         -- show snap slots
         -- dim for unused, bright for contains data
         screen.move(64, 10)
-        screen.text_center("-snapshots-")
+        screen.text_center("-silos.snapshots-")
         for i = 1, 4 do
           for j = 1, 16 do
-            screen.level(#snaps[i][j] > 0 and 10 or 2 )
+            screen.level(#silos.snaps[i][j] > 0 and 10 or 2 )
             screen.rect(0.5 + j * 8, 10 + i * 8, 4, 4)
             screen.fill()
             screen.stroke()
@@ -374,14 +390,14 @@ end
 -- arc ------------
 
 function a.delta(n, d)
-  params:delta(arc_choices[n], d / 10)
+  params:delta(silos.arc_choices[n], d / 10)
   is_dirty = true
 end
 
 
 function arc_redraw()
   for i = 1, 4 do
-    ring_choice = arc_choices[i]
+    ring_choice = silos.arc_choices[i]
 
     a:segment(i,
       util.degs_to_rads(210),
@@ -401,8 +417,8 @@ function g.key(x, y, z)
   if x <= 8  and z == 1 then
     -- left x/y pad
     -- scale values and set selected params
-    local grid_choicex = gridx_choices[1]
-    local grid_choicey = gridy_choices[1]
+    local grid_choicex = silos.gridx_choices[1]
+    local grid_choicey = silos.gridy_choices[1]
     local x_scaled = util.linlin(1, 8, params:get_range(grid_choicex)[1], params:get_range(grid_choicex)[2], x)
     local y_scaled = util.linlin(1, 8, params:get_range(grid_choicey)[1], params:get_range(grid_choicey)[2], y)
     params:set(grid_choicex, x_scaled)
@@ -411,8 +427,8 @@ function g.key(x, y, z)
   elseif x >= 9 and z == 1 then
     -- right x/y pad
     -- scale values and set params
-    local grid_choicex = gridx_choices[2]
-    local grid_choicey = gridy_choices[2]
+    local grid_choicex = silos.gridx_choices[2]
+    local grid_choicey = silos.gridy_choices[2]
     local x_scaled = util.linlin(9, 16, params:get_range(grid_choicex)[1], params:get_range(grid_choicex)[2], x)
     local y_scaled = util.linlin(1, 8, params:get_range(grid_choicey)[1], params:get_range(grid_choicey)[2], y)
     params:set(grid_choicex, x_scaled)
@@ -427,29 +443,29 @@ end
 function g.redraw()
   g:all(0)
 
-    local x_scaled = util.linlin(params:get_range(gridx_choices[1])[1],
-      params:get_range(gridx_choices[1])[2],
+    local x_scaled = util.linlin(params:get_range(silos.gridx_choices[1])[1],
+      params:get_range(silos.gridx_choices[1])[2],
       1,
       8,
-      params:get(gridx_choices[1]))
+      params:get(silos.gridx_choices[1]))
   
-    local y_scaled = util.linlin(params:get_range(gridy_choices[1])[1],
-      params:get_range(gridy_choices[1])[2],
+    local y_scaled = util.linlin(params:get_range(silos.gridy_choices[1])[1],
+      params:get_range(silos.gridy_choices[1])[2],
       1,
       8,
-      params:get(gridy_choices[1]))
+      params:get(silos.gridy_choices[1]))
     
-    local x_scaled2 = util.linlin(params:get_range(gridx_choices[2])[1],
-      params:get_range(gridx_choices[2])[2],
+    local x_scaled2 = util.linlin(params:get_range(silos.gridx_choices[2])[1],
+      params:get_range(silos.gridx_choices[2])[2],
       9,
       16,
-      params:get(gridx_choices[2]))
+      params:get(silos.gridx_choices[2]))
   
-    local y_scaled2 = util.linlin(params:get_range(gridy_choices[2])[1],
-      params:get_range(gridy_choices[2])[2],
+    local y_scaled2 = util.linlin(params:get_range(silos.gridy_choices[2])[1],
+      params:get_range(silos.gridy_choices[2])[2],
       1,
       8,
-      params:get(gridy_choices[2]))
+      params:get(silos.gridy_choices[2]))
   
     x_scaled = math.floor(x_scaled + 0.5)
     y_scaled = math.floor(y_scaled + 0.5)
@@ -559,22 +575,22 @@ function keyboard.code(code,value)
         local n = math.random(low, high)
         params:set(controls[track][control], n)
       elseif command[1] == "enc" then
-        if command[3] == "macro" then
+        if command[3] == "silos.macros" then
           local e, state = tonumber(command[2]), tonumber(command[4])
-          is_macro[e] = state == 1 and true or false
+          is_silos.macros[e] = state == 1 and true or false
         else
           local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
-          enc_choices[x] = controls[n][v]
+          silos.enc_choices[x] = controls[n][v]
         end
       elseif command[1] == "arc" then
         local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
-        arc_choices[x] = controls[n][v]
+        silos.arc_choices[x] = controls[n][v]
       elseif command[1] == "gridx" then
         local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
-        gridx_choices[x] = controls[n][v]
+        silos.gridx_choices[x] = controls[n][v]
       elseif command[1] == "gridy" then
         local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
-        gridy_choices[x] = controls[n][v]
+        silos.gridy_choices[x] = controls[n][v]
       elseif command[1] == "g" or command[1] == "gate" then
         for i = 1, 4 do
           local state = tonumber(command[i + 1])
@@ -587,32 +603,36 @@ function keyboard.code(code,value)
         end
       elseif command[1] == "s" or command[1] == "snap" then
         local snap_id, t = tonumber(command[2]), tonumber(command[3])
-        snaps[t][snap_id] = {}
+        silos.snaps[t][snap_id] = {}
         for i = 1, #controls[t] do
-          table.insert(snaps[t][snap_id], params:get(controls[t][i]))
+          table.insert(silos.snaps[t][snap_id], params:get(controls[t][i]))
         end
       elseif command[1] == "l" or command[1] == "load" then
         local snap_id, t = tonumber(command[2]), tonumber(command[3])
-        if #snaps[t][snap_id] > 0 then
+        if #silos.snaps[t][snap_id] > 0 then
           for i = 1, #controls[t] do
-            params:set(controls[t][i], snaps[t][snap_id][i])
+            params:set(controls[t][i], silos.snaps[t][snap_id][i])
           end
         end
       elseif command[1] == "macro" then
         local id = tonumber(command[2])
         if command[3] == "clear" then
-          macro[id] = {}
-          --is_macro[3] = false
+          silos.macros[id] = {}
+          --is_silos.macros[3] = false
         elseif command[3] == "fx" then
           local id, control, mul = tonumber(command[2]), tonumber(command[4]), tonumber(command[5])
-          table.insert(macro[id], fx_controls[control])
-          table.insert(muls[id], mul)
+          table.insert(silos.macros[id], fx_controls[control])
+          table.insert(silos.muls[id], mul)
         else  
           local id, track, control, mul = tonumber(command[2]), tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
-          table.insert(macro[id], controls[track][control])
-          table.insert(muls[id], mul)
+          table.insert(silos.macros[id], controls[track][control])
+          table.insert(silos.muls[id], mul)
         end
-        print("macro length " .. #macro[3])
+        print("macro length " .. #silos.macros[3])
+      elseif command[1] == "save_state" then
+        save_state()
+      elseif command[1] == "load_state" then
+        load_state()
       elseif tabutil.contains(controls[track], command[2] .. command[1]) then
         local v = tonumber(command[3])
         params:set(command[2] .. command[1], v)
