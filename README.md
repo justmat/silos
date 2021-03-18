@@ -95,7 +95,7 @@ Current commands:
     * ``save_state``
     * ``load_state``
 
-  *nb: this doesn't save parameter info. you still need that params menu for that*
+  *nb: this saves/loads both script state and parameter set*
 
   * key bindings
     * ctrl + g = toggle gate
