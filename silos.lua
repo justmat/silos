@@ -523,47 +523,45 @@ function keyboard.code(code,value)
 
   if value == 1 or value == 2 then -- 1 is down, 2 is held, 0 is release
     if keyboard.ctrl() then
-      -- script controls
+      -- hold control for script control keybinds
       if code == "G" then
-        -- gate on for selected track
+        -- toggle gate for selected track
         if params:get(track .. "gate") == 0 then
           params:set(track .. "gate", 1)
         else
           params:set(track .. "gate", 0)
         end
-
       elseif code == "R" then
-        -- arm record
+        -- toggle record
         if params:get(track .. "record") == 0 then
           params:set(track .. "record", 1)
         else
           params:set(track .. "record", 0)
         end
-      elseif code == "1" then
-        track = 1
-      elseif code == "2" then
-        track = 2
-      elseif code == "3" then
-        track = 3
-      elseif code == "4" then
-        track = 4
+      elseif code == "1" or code == "2" or code == "3" or code == "4" then
+        track = tonumber(code)
       end
-    
     elseif code == "BACKSPACE" then
-      my_string = my_string:sub(1, -2) -- erase characters from my_string
+      -- erase characters from my_string
+      my_string = my_string:sub(1, -2)
     elseif code == "UP" then
-      if #history > 0 then -- make sure there's a history
-        if new_line then -- reset the history index after pressing enter
+      -- make sure there's a history
+      if #history > 0 then 
+        -- reset the history index after pressing enter
+        if new_line then
           history_index = #history
           new_line = false
         else
-          history_index = util.clamp(history_index - 1, 1, #history) -- increment history_index
+          -- decrement history_index
+          history_index = util.clamp(history_index - 1, 1, #history)
         end
         my_string = history[history_index]
       end
     elseif code == "DOWN" then
-      if #history > 0 and history_index ~= nil then -- make sure there is a history, and we are accessing it
-        history_index = util.clamp(history_index + 1, 1, #history) -- decrement history_index
+      -- make sure there is a history, and we are accessing it
+      if #history > 0 and history_index ~= nil then
+        -- increment history_index
+        history_index = util.clamp(history_index + 1, 1, #history) 
         my_string = history[history_index]
       end
     elseif code == "RIGHT" then
@@ -575,18 +573,21 @@ function keyboard.code(code,value)
         info_focus = util.clamp(info_focus - 1, 1, 5)
       end
     elseif code == "ENTER" then
-      -- parse string
-      print(my_string)
+      -- parse string for commands
       local command = split_string(my_string)
+      -- rand
       if command[1] == "rand" then
         local track, control, p = tonumber(command[2]), tonumber(command[3]), controls[track][control]
         local low, high = tonumber(params:get_range(p)[1]), tonumber(params:get_range(p)[2])
         local n = math.random(low, high)
         params:set(controls[track][control], n)
+      -- rrand
       elseif command[1] == "rrand" then
         local low, high, track, control = tonumber(command[2]), tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
         local n = math.random(low, high)
         params:set(controls[track][control], n)
+      -- assign controls
+      -- enc
       elseif command[1] == "enc" then
         if command[3] == "silos.macros" then
           local e, state = tonumber(command[2]), tonumber(command[4])
@@ -595,31 +596,39 @@ function keyboard.code(code,value)
           local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
           silos.enc_choices[x] = controls[n][v]
         end
+      -- arc
       elseif command[1] == "arc" then
         local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
         silos.arc_choices[x] = controls[n][v]
+      -- gridx
       elseif command[1] == "gridx" then
         local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
         silos.gridx_choices[x] = controls[n][v]
+      -- gridy
       elseif command[1] == "gridy" then
         local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
         silos.gridy_choices[x] = controls[n][v]
+      -- set all gates
       elseif command[1] == "g" or command[1] == "gate" then
         for i = 1, 4 do
           local state = tonumber(command[i + 1])
           params:set(i .. "gate", state)
         end
+      -- set all records
       elseif command[1] == "r" or command[1] == "record" then
         for i = 1, 4 do
           local state = tonumber(command[i + 1])
           params:set(i .. "record", state)
         end
+      -- parameter snapshots
+      -- snap
       elseif command[1] == "s" or command[1] == "snap" then
         local snap_id, t = tonumber(command[2]), tonumber(command[3])
         silos.snaps[t][snap_id] = {}
         for i = 1, #controls[t] do
           table.insert(silos.snaps[t][snap_id], params:get(controls[t][i]))
         end
+      -- load
       elseif command[1] == "l" or command[1] == "load" then
         local snap_id, t = tonumber(command[2]), tonumber(command[3])
         if #silos.snaps[t][snap_id] > 0 then
@@ -627,6 +636,7 @@ function keyboard.code(code,value)
             params:set(controls[t][i], silos.snaps[t][snap_id][i])
           end
         end
+      -- macro commands
       elseif command[1] == "macro" then
         local id = tonumber(command[2])
         if command[3] == "clear" then
@@ -641,11 +651,12 @@ function keyboard.code(code,value)
           table.insert(silos.macros[id], controls[track][control])
           table.insert(silos.muls[id], mul)
         end
-        print("macro length " .. #silos.macros[3])
+      -- state persistence 
       elseif command[1] == "save_state" then
         save_state()
       elseif command[1] == "load_state" then
         load_state()
+      -- set single parameters
       elseif tabutil.contains(controls[track], command[2] .. command[1]) then
         local v = tonumber(command[3])
         params:set(command[2] .. command[1], v)
@@ -653,14 +664,12 @@ function keyboard.code(code,value)
         local c, v = tonumber(command[2]), tonumber(command[3])
         params:set(fx_controls[c], v)
       end
-      table.insert(history, my_string) -- append the command to history
-      my_string = "" -- clear my_string
+      -- append the command to history
+      table.insert(history, my_string)
+      -- clear my_string
+      my_string = "" 
       new_line = true
     end
     is_dirty = true
   end
-end
-
-function rerun()
-  norns.script.load(norns.state.script)
 end
