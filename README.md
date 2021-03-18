@@ -95,7 +95,11 @@ Current commands:
     * ``save_state``
     * ``load_state``
 
-  *nb: this saves/loads both script state and parameter set*
+  * save and load pset
+    * ``save_pset``
+    * ``load_pset``
+
+  *nb: state includes control assignments, macros, snapshots etc... pset is the parameter values*
 
   * key bindings
     * ctrl + g = toggle gate

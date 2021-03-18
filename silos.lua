@@ -83,17 +83,34 @@ local start_time = util.time()
 local walk = 123
 
 
+local function simplecopy(obj)
+  if type(obj) ~= 'table' then return obj end
+  local res = {}
+  for k, v in pairs(obj) do
+    res[simplecopy(k)] = simplecopy(v)
+  end
+  return res
+end
+
+
 local function save_state()
   tabutil.save(silos, paths.code .. "silos/lib/silos.state")
-  print("yep!")
 end
 
 
 local function load_state()
-  tabutil.load((paths.code .. "silos/lib/silos.state"))
-  print("did it !!")
+  silos = tabutil.load(paths.code .. "silos/lib/silos.state")
 end
 
+
+local function save_pset()
+  params:write()
+end
+
+
+local function load_pset()
+  params:read()
+end
 
 function split_string(input_string, sep)
   -- seperates a string by whitespace
@@ -651,11 +668,15 @@ function keyboard.code(code,value)
           table.insert(silos.macros[id], controls[track][control])
           table.insert(silos.muls[id], mul)
         end
-      -- state persistence 
+      -- state/pset persistence 
       elseif command[1] == "save_state" then
         save_state()
       elseif command[1] == "load_state" then
         load_state()
+      elseif command[1] == "save_pset" then
+        save_pset()
+      elseif command[1] == "load_pset" then
+        load_pset()
       -- set single parameters
       elseif tabutil.contains(controls[track], command[2] .. command[1]) then
         local v = tonumber(command[3])
