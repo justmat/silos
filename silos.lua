@@ -83,16 +83,6 @@ local start_time = util.time()
 local walk = 123
 
 
-local function simplecopy(obj)
-  if type(obj) ~= 'table' then return obj end
-  local res = {}
-  for k, v in pairs(obj) do
-    res[simplecopy(k)] = simplecopy(v)
-  end
-  return res
-end
-
-
 local function save_state()
   tabutil.save(silos, paths.code .. "silos/lib/silos.state")
 end
