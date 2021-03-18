@@ -467,45 +467,33 @@ end
 
 function g.redraw()
   g:all(0)
+  local gxh, gxl = params:get_range(silos.gridx_choices[1])[1], params:get_range(silos.gridx_choices[1])[2]
+  local gyh, gyl = params:get_range(silos.gridy_choices[1])[1], params:get_range(silos.gridy_choices[1])[2]
+  
+  local x_scaled = util.linlin(gxh, gxl, 1, 8, params:get(silos.gridx_choices[1]))
+  local y_scaled = util.linlin(gyh, gyl, 1, 8, params:get(silos.gridy_choices[1]))
 
-    local x_scaled = util.linlin(params:get_range(silos.gridx_choices[1])[1],
-      params:get_range(silos.gridx_choices[1])[2],
-      1,
-      8,
-      params:get(silos.gridx_choices[1]))
+  gxh, gxl = params:get_range(silos.gridx_choices[2])[1], params:get_range(silos.gridx_choices[2])[2]
+  gyh, gyl = params:get_range(silos.gridy_choices[2])[1], params:get_range(silos.gridy_choices[2])[2]
   
-    local y_scaled = util.linlin(params:get_range(silos.gridy_choices[1])[1],
-      params:get_range(silos.gridy_choices[1])[2],
-      1,
-      8,
-      params:get(silos.gridy_choices[1]))
-    
-    local x_scaled2 = util.linlin(params:get_range(silos.gridx_choices[2])[1],
-      params:get_range(silos.gridx_choices[2])[2],
-      9,
-      16,
-      params:get(silos.gridx_choices[2]))
-  
-    local y_scaled2 = util.linlin(params:get_range(silos.gridy_choices[2])[1],
-      params:get_range(silos.gridy_choices[2])[2],
-      1,
-      8,
-      params:get(silos.gridy_choices[2]))
-  
-    x_scaled = math.floor(x_scaled + 0.5)
-    y_scaled = math.floor(y_scaled + 0.5)
-    x_scaled2 = math.floor(x_scaled2 + 0.5)
-    y_scaled2 = math.floor(y_scaled2 + 0.5)
-    
-    for i = 1, 8 do
-      g:led(i, y_scaled, 2)
-      g:led(x_scaled, i, 2)
-      g:led(i + 8, y_scaled2, 2)
-      g:led(x_scaled2, i, 2)
-    end
+  local x_scaled2 = util.linlin(gxh, gxl, 9, 16, params:get(silos.gridx_choices[2]))
+  local y_scaled2 = util.linlin(gyh, gyl, 1, 8, params:get(silos.gridy_choices[2]))
 
-    g:led(x_scaled, y_scaled, 10)
-    g:led(x_scaled2, y_scaled2, 10)
+  
+  x_scaled = math.floor(x_scaled + 0.5)
+  y_scaled = math.floor(y_scaled + 0.5)
+  x_scaled2 = math.floor(x_scaled2 + 0.5)
+  y_scaled2 = math.floor(y_scaled2 + 0.5)
+    
+  for i = 1, 8 do
+    g:led(i, y_scaled, 2)
+    g:led(x_scaled, i, 2)
+    g:led(i + 8, y_scaled2, 2)
+    g:led(x_scaled2, i, 2)
+  end
+
+  g:led(x_scaled, y_scaled, 10)
+  g:led(x_scaled2, y_scaled2, 10)
 
   g:refresh()
 end
