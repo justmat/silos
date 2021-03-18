@@ -92,8 +92,8 @@ Current commands:
       * ``s 1 1`` and ``l 1 1`` are valid
 
   * save and load state
-    * ``save_state``
-    * ``load_state``
+    * ``save_state id``
+    * ``load_state id``
 
   * save and load pset
     * ``save_pset``

@@ -83,13 +83,15 @@ local start_time = util.time()
 local walk = 123
 
 
-local function save_state()
-  tabutil.save(silos, paths.code .. "silos/lib/silos.state")
+local function save_state(id)
+  if id == nil then id = "silos" end
+  tabutil.save(silos, paths.code .. "silos/lib/" .. id .. ".state")
 end
 
 
-local function load_state()
-  silos = tabutil.load(paths.code .. "silos/lib/silos.state")
+local function load_state(id)
+  if id == nil then id = "silos" end
+  silos = tabutil.load(paths.code .. "silos/lib/" .. id .. ".state")
 end
 
 
@@ -660,9 +662,9 @@ function keyboard.code(code,value)
         end
       -- state/pset persistence 
       elseif command[1] == "save_state" then
-        save_state()
+        save_state(command[2])
       elseif command[1] == "load_state" then
-        load_state()
+        load_state(command[2])
       elseif command[1] == "save_pset" then
         save_pset()
       elseif command[1] == "load_pset" then
