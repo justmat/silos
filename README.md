@@ -1,5 +1,5 @@
 # silos
-a live granualr instrument for norns
+a live granular instrument for norns
 ![](assets/silos.png)
 —————
 
