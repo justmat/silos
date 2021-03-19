@@ -598,25 +598,46 @@ function keyboard.code(code,value)
       -- assign controls
       -- enc
       elseif command[1] == "enc" then
-        if command[3] == "silos.macros" then
-          local e, state = tonumber(command[2]), tonumber(command[4])
-          is_silos.macros[e] = state == 1 and true or false
+        if command[3] == "macro" then
+          local id, state = tonumber(command[2]), tonumber(command[4])
+          is_macro[id] = state == 1 and true or false
+        elseif command[3] == "fx" then
+          local id, control = tonumber(command[2]), tonumber(command[4])
+          silos.enc_choices[id] = fx_controls[control]
         else
-          local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
-          silos.enc_choices[x] = controls[n][v]
+          local id, track, control = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
+          silos.enc_choices[id] = controls[track][control]
         end
       -- arc
       elseif command[1] == "arc" then
-        local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
-        silos.arc_choices[x] = controls[n][v]
+        local id = tonumber(command[2])
+        if command[3] == "fx" then
+          local control = tonumber(command[4])
+          silos.arc_choices[id] = fx_controls[control]
+        else
+          local track, control = tonumber(command[3]), tonumber(command[4])
+          silos.arc_choices[id] = controls[track][control]
+        end
       -- gridx
       elseif command[1] == "gridx" then
-        local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
-        silos.gridx_choices[x] = controls[n][v]
+        local id = tonumber(command[2])
+        if command[3] == "fx" then
+          local control = tonumber(command[4])
+          silos.gridx_choices[id] = fx_controls[control]
+        else
+          local track, control = tonumber(command[3]), tonumber(command[4])
+          silos.gridx_choices[id] = controls[track][control]
+        end
       -- gridy
       elseif command[1] == "gridy" then
-        local x, n, v = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
-        silos.gridy_choices[x] = controls[n][v]
+        local id = tonumber(command[2])
+        if command[3] == "fx" then
+          local control = tonumber(command[4])
+          silos.gridy_choices[id] = fx_controls[control]
+        else
+          local track, control = tonumber(command[3]), tonumber(command[4])
+          silos.gridy_choices[id] = controls[track][control]
+        end
       -- set all gates
       elseif command[1] == "g" or command[1] == "gate" then
         for i = 1, 4 do
