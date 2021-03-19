@@ -60,7 +60,7 @@ silos.enc_choices = {"1gain", "1position", "1speed"}
 silos.arc_choices = {"1jitter", "1spread", "1density", "1pitch"}
 silos.gridx_choices = {"1spread", "2spread"}
 silos.gridy_choices = {"1jitter", "2jitter"}
--- for parameter silos.snapshots
+-- for parameter snapshots
 silos.snaps = {}
 for i = 1, 4 do
   silos.snaps[i] = {}
@@ -68,7 +68,7 @@ for i = 1, 4 do
     silos.snaps[i][j] = {}
   end
 end
--- for control silos.macross
+-- for control macros
 silos.macros = {}
 silos.muls = {}
 for i = 1, 3 do
@@ -260,6 +260,7 @@ function enc(n, d)
 end
 
 -- screen ----------
+
 local function draw_engine_params()
   screen.move(1, 10)
   screen.text(1 .. " gain " .. string.format("%.1f", params:get(track .."gain")))
@@ -354,7 +355,7 @@ local function draw_snaps()
   -- show snap slots
   -- dim for unused, bright for contains data
   screen.move(64, 10)
-  screen.text_center("-silos.snapshots-")
+  screen.text_center("-snapshots-")
   for i = 1, 4 do
     for j = 1, 16 do
       screen.level(#silos.snaps[i][j] > 0 and 10 or 2 )
@@ -431,15 +432,9 @@ end
 
 function arc_redraw()
   for i = 1, 4 do
-    ring_choice = silos.arc_choices[i]
-
-    a:segment(i,
-      util.degs_to_rads(210),
-      util.degs_to_rads(util.linlin(params:get_range(ring_choice)[1], params:get_range(ring_choice)[2],
-      210,
-      309 + 210,
-      params:get(ring_choice))),
-    15)
+    local ring = silos.arc_choices[i]
+    local low, high = params:get_range(ring)[1], params:get_range(ring)[2]
+    a:segment(i, util.degs_to_rads(210), util.degs_to_rads(util.linlin(low, high, 210, 309 + 210,  params:get(ring))), 15)
   end
   a:refresh()
 end
