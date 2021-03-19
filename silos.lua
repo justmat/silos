@@ -598,14 +598,15 @@ function keyboard.code(code,value)
       -- assign controls
       -- enc
       elseif command[1] == "enc" then
+        local id = tonumber(command[2])
         if command[3] == "macro" then
-          local id, state = tonumber(command[2]), tonumber(command[4])
+          local state = tonumber(command[4])
           is_macro[id] = state == 1 and true or false
         elseif command[3] == "fx" then
-          local id, control = tonumber(command[2]), tonumber(command[4])
+          local control = tonumber(command[4])
           silos.enc_choices[id] = fx_controls[control]
         else
-          local id, track, control = tonumber(command[2]), tonumber(command[3]), tonumber(command[4])
+          local track, control = tonumber(command[3]), tonumber(command[4])
           silos.enc_choices[id] = controls[track][control]
         end
       -- arc
@@ -671,13 +672,12 @@ function keyboard.code(code,value)
         local id = tonumber(command[2])
         if command[3] == "clear" then
           silos.macros[id] = {}
-          --is_silos.macros[3] = false
         elseif command[3] == "fx" then
-          local id, control, mul = tonumber(command[2]), tonumber(command[4]), tonumber(command[5])
+          local control, mul = tonumber(command[4]), tonumber(command[5])
           table.insert(silos.macros[id], fx_controls[control])
           table.insert(silos.muls[id], mul)
         else  
-          local id, track, control, mul = tonumber(command[2]), tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
+          local track, control, mul = tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
           table.insert(silos.macros[id], controls[track][control])
           table.insert(silos.muls[id], mul)
         end
