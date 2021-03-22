@@ -3,7 +3,8 @@ a live granular instrument for norns
 ![](assets/silos.png)
 —————
 
-### silos contains 4 tracks, each with it's own 8 second buffer. the parameters for control are:
+### silos granular engine contains 4 tracks, each with its own 8 second buffer. the parameters for controlling the engine are:
+
 * gain = output level for the voice (0 - 1)
 * position = position within the buffer (0 - 1)
 * speed = playhead speed (-4 - 4) 
@@ -18,7 +19,7 @@ a live granular instrument for norns
 
 *nb: speed and pitch both work as rate controls. 2 is twice as fast/1 octave up*
 
-### there is also an fx bus that features a lush modulated reverb followed by a bit crusher. fx parameters for control are:
+### there is also an fx bus that features a lush modulated reverb followed by a bit crusher. the fx parameters are:
 
 * gain = fx output level (0 - 1)
 * time = t60/ the time it takes for the sound to decay by -60db (0 - 60)
@@ -33,6 +34,13 @@ a live granular instrument for norns
 * bit depth = bit crushing (4 - 32)
 
 ----------
+
+# quick start
+
+-- TODO
+
+
+-----------
 
 Current commands:
 
