@@ -170,45 +170,44 @@ function init()
    params:add_group("fx", 13)
   -- effect controls
   -- delay time
-  params:add_control("time", "*" .. "time", controlspec.new(0.0, 60.0, "lin", .01, 60, ""))
+  params:add_taper("time", "*" .. "time", 0.0, 60.0, 60, 0, "")
   params:set_action("time", function(value) engine.time(value) end)
   -- delay size
-  params:add_control("verbsize", "*" .. "size", controlspec.new(0.5, 5.0, "lin", 0.01, 1.67, ""))
+  params:add_taper("verbsize", "*" .. "size", 0.5, 5.0, 1.67, 0, "")
   params:set_action("verbsize", function(value) engine.verbsize(value) end)
   -- dampening 
-  params:add_control("damp", "*" .. "damp", controlspec.new(0.0, 1.0, "lin", 0.01, 0.3144, ""))
+  params:add_taper("damp", "*" .. "damp", 0.0, 1.0, 0.3144, 0, "")
   params:set_action("damp", function(value) engine.damp(value) end)
   -- diffusion
-  params:add_control("diff", "*" .. "diff", controlspec.new(0.0, 1.0, "lin", 0.01, 0.71, ""))
+  params:add_taper("diff", "*" .. "diff", 0.0, 1.0, 0.71, 0, "")
   params:set_action("diff", function(value) engine.diff(value) end)
   -- mod depth
-  params:add_control("mod_depth", "*" .. "mod depth", controlspec.new(0.0, 1.0, "lin", 0, .66, ""))
+  params:add_taper("mod_depth", "*" .. "mod depth", 0.0, 1.0, .66, 0, "")
   params:set_action("mod_depth", function(value) engine.mod_depth(value) end)
   -- mod rate
-  params:add_control("mod_freq", "*" .. "mod freq", controlspec.new(0.0, 10.0, "lin", 0.01, 3.00, "hz"))
+  params:add_taper("mod_freq", "*" .. "mod freq", 0.0, 10.0, 3.00, 0, "hz")
   params:set_action("mod_freq", function(value) engine.mod_freq(value) end)
   -- reverb eq
-  params:add_control("lowx", "*" .. "lowx", controlspec.new(0.0, 1.0, "lin", 0, 0.8, ""))
+  params:add_taper("lowx", "*" .. "lowx", 0.0, 1.0, 0.8, 0, "")
   params:set_action("lowx", function(value) engine.low(value) end)
   
-  params:add_control("midx", "*" .. "midx", controlspec.new(0.0, 1.0, "lin", 0, 0.70, ""))
+  params:add_taper("midx", "*" .. "midx", 0.0, 1.0, 0.70, 0, "")
   params:set_action("midx", function(value) engine.mid(value) end)
   
-  params:add_control("highx", "*" .. "highx", controlspec.new(0.0, 1.0, "lin", 0, 0, ""))
+  params:add_taper("highx", "*" .. "highx", 0.0, 1.0, 0.3, 0, "")
   params:set_action("highx", function(value) engine.high(value) end)
   
-  params:add_control("lowcross", "*" .. "low crossover", controlspec.new(100, 6000.0, "lin", 0, 2450.0, ""))
+  params:add_taper("lowcross", "*" .. "low crossover", 100, 6000.0, 2450.0, 0, "")
   params:set_action("lowcross", function(value) engine.lowcut(value) end)
   
-  params:add_control("highcross", "*" .. "high crossover", controlspec.new(1000.0, 10000.0, "lin", 0, 1024.0, ""))
+  params:add_taper("highcross", "*" .. "high crossover", 1000.0, 10000.0, 1024.0, 0, "")
   params:set_action("highcross", function(value) engine.highcut(value) end)
   -- bit depth
   params:add_taper("bit_depth", "*bit depth", 4, 32, 32, 0, "")
   params:set_action("bit_depth", function(value) engine.bit_depth(value) end)
   -- reverb output volume
-  params:add_control("fx_gain", "*" .. "gain", controlspec.new(0.0, 1.0, "lin", 0, 0.50, ""))
+  params:add_taper("fx_gain", "*" .. "gain", 0.0, 1.0, 0.50, 0, "")
   params:set_action("fx_gain", function(value) engine.fxgain(value) end)
-
 
   params:bang()
 
