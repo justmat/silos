@@ -604,7 +604,7 @@ function keyboard.code(code,value)
         local id = tonumber(command[2])
         if command[3] == "macro" then
           local state = tonumber(command[4])
-          is_macro[id] = state == 1 and true or false
+          silos.is_macro[id] = state == 1 and true or false
         elseif command[3] == "fx" then
           local control = tonumber(command[4])
           silos.enc_choices[id] = fx_controls[control]
