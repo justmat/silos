@@ -94,8 +94,9 @@ Current commands:
       * ``enc 3 macro 0``
     * clear the macro with
     * ``macro macro_id clear``
-        * ``macro 3 clear`` = clear encoder 3 macro 
-
+        * ``macro 3 clear`` = clear encoder 3 macro
+        
+  *nb: multiplier can be negative numbers! 
 
   * set parameters: 
     * ``control_name track value`` 
