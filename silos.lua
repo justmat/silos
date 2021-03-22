@@ -13,6 +13,7 @@ local tabutil = require 'tabutil'
 
 local a = arc.connect(1)
 local g = grid.connect(1)
+local alt = false
 -- for keyboard input
 local my_string = ""
 local history = {}
@@ -230,9 +231,9 @@ end
 
 -- norns hardware ----------
 function key(n, z)
-  if n == 1 and z == 1 then
-    show_info = not show_info
-  elseif n == 2 and z == 1 then
+  if n == 1 then alt = z == 1 and true or false end
+
+  if n == 2 and z == 1 then
     -- gate on for selected track
     if params:get(track .. "gate") == 0 then
       params:set(track .. "gate", 1)
@@ -240,8 +241,10 @@ function key(n, z)
       params:set(track .. "gate", 0)
     end
   elseif n == 3 and z == 1 then
+    if alt then
+      show_info = not show_info
     -- recording on for selcted track
-    if params:get(track .. "record") == 0 then
+    elseif params:get(track .. "record") == 0 then
       params:set(track .. "record", 1)
     else
       params:set(track .. "record", 0)
@@ -252,7 +255,9 @@ end
 
 
 function enc(n, d)
-  if silos.is_macro[n] then
+  if alt and n == 3 then
+    info_focus = util.clamp(info_focus + d, 1, 5)
+  elseif silos.is_macro[n] then
     for i = 1, #silos.macros[n] do
       params:delta(silos.macros[n][i], d * silos.muls[n][i])
     end
