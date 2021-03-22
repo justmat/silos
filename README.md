@@ -3,6 +3,37 @@ a live granular instrument for norns
 ![](assets/silos.png)
 —————
 
+### silos contains 4 tracks, each with it's own 8 second buffer. the parameters for control are:
+* gain = output level for the voice (0 - 1)
+* position = position within the buffer (0 - 1)
+* speed = playhead speed (-4 - 4) 
+* jitter = position modulation (0 - 100)
+* size = grain size (0 - 500ms)
+* pitch = grain pitch (-4 - 4)
+* fdbk = feedback (0 - 1)
+* density = frequency of grains (0 - 512hz)
+* dispersal = density modulation (0 - 1)
+* spread = pan position modulation (0 - 100)
+* fx send = send amount (0 - 1)
+
+*nb: speed and pitch both work as rate controls. 2 is twice as fast/1 octave up*
+
+### there is also an fx bus that features a lush modulated reverb followed by a bit crusher. fx parameters for control are:
+
+* gain = fx output level (0 - 1)
+* time = t60/ the time it takes for the sound to decay by -60db (0 - 60)
+* size = size of the space (.5 - 5)
+* dampening = damping of high-frequencies as the reverb decays (0 - 1)
+* diffusion = shape of early reflections (0 - 1)
+* modulation depth = depth of delay-line modulation (0 - 1)
+* modulation frequency = delay-line modulation freq (0 - 10)
+* lowx = multiplier for the reverberation time within the low band (0 - 1)
+* midx = multiplier for the reverberation time within the mid band (0 - 1)
+* highx = multiplier for the reverberation time within the high band (0 - 1)
+* bit depth = bit crushing (4 - 32)
+
+----------
+
 Current commands:
 
   * Assign engine controls: 
@@ -47,6 +78,7 @@ Current commands:
       * 8 = lowx
       * 9 = midx
       * 10 = highx
+      * 11 = bit depth
 
     *nb: control lists can be viewed in app by pressing ESC and using LEFT or RIGHT arrows to navigate*
 
