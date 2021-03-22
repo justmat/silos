@@ -41,7 +41,7 @@ for i = 1, 4 do
 end
 
 local fx_controls = {
-  "verbgain",
+  "fx_gain",
   "time",
   "verbsize",
   "damp",
@@ -50,7 +50,8 @@ local fx_controls = {
   "mod_freq",
   "lowx",
   "midx",
-  "highx"
+  "highx",
+  "bit_depth"
 }
 
 -- for saving state
@@ -137,7 +138,7 @@ function init()
     params:add_taper(i .. "position", i .. " position", 0, 1, 0.001, 0)
     params:set_action(i .. "position", function(value)  engine.seek(i, value) end)
 
-    params:add_taper(i .. "speed", i .. " speed", -300, 300, 100, 0, "%")
+    params:add_taper(i .. "speed", i .. " speed", -300, 300, 0, 0, "%")
     params:set_action(i .. "speed", function(value) engine.speed(i, value / 100) end)
 
     params:add_taper(i .. "jitter", i .. " jitter", 0, 500, 0, 5, "ms")
@@ -152,8 +153,8 @@ function init()
     params:add_control(i.."dispersal", i.." dispersal", controlspec.new(0.00, 1.00, "lin", 0, 0))
     params:set_action(i.."dispersal", function(v) engine.density_mod_amt(i, v) end)
 
-    params:add_taper(i .. "pitch", i .. " pitch", -24, 24, 0, 0, "st")
-    params:set_action(i .. "pitch", function(value) engine.pitch(i, math.pow(0.5, -value / 12)) end)
+    params:add_taper(i .. "pitch", i .. " pitch", -4, 4, 1, 0, "")
+    params:set_action(i .. "pitch", function(value) engine.pitch(i, value) end)
 
     params:add_taper(i .. "spread", i .. " spread", 0, 100, 35, 0, "%")
     params:set_action(i .. "spread", function(value) engine.spread(i, value / 100) end)
@@ -166,7 +167,7 @@ function init()
   end
   
   params:add_separator()
-   params:add_group("reverb", 12)
+   params:add_group("fx", 13)
   -- effect controls
   -- delay time
   params:add_control("time", "*" .. "time", controlspec.new(0.0, 60.0, "lin", .01, 60, ""))
@@ -201,9 +202,12 @@ function init()
   
   params:add_control("highcross", "*" .. "high crossover", controlspec.new(1000.0, 10000.0, "lin", 0, 1024.0, ""))
   params:set_action("highcross", function(value) engine.highcut(value) end)
+  -- bit depth
+  params:add_taper("bit_depth", "*bit depth", 4, 32, 32, 0, "")
+  params:set_action("bit_depth", function(value) engine.bit_depth(value) end)
   -- reverb output volume
-  params:add_control("verbgain", "*" .. "gain", controlspec.new(0.0, 1.0, "lin", 0, 0.50, ""))
-  params:set_action("verbgain", function(value) engine.verbgain(value) end)
+  params:add_control("fx_gain", "*" .. "gain", controlspec.new(0.0, 1.0, "lin", 0, 0.50, ""))
+  params:set_action("fx_gain", function(value) engine.fxgain(value) end)
 
 
   params:bang()
@@ -291,7 +295,7 @@ local function draw_fx_params()
   screen.move(54, 10)
   screen.text_center("-fx-")
   screen.move(1, 18)
-  screen.text("1 gain " .. string.format("%.2f", params:get("verbgain")))
+  screen.text("1 gain " .. string.format("%.2f", params:get("fx_gain")))
   screen.move(1, 26)
   screen.text("2 time " .. string.format("%.1f", params:get("time")))
   screen.move(1, 34)
@@ -432,9 +436,9 @@ end
 
 function arc_redraw()
   for i = 1, 4 do
-    local ring = silos.arc_choices[i]
-    local low, high = params:get_range(ring)[1], params:get_range(ring)[2]
-    a:segment(i, util.degs_to_rads(210), util.degs_to_rads(util.linlin(low, high, 210, 309 + 210,  params:get(ring))), 15)
+    local ring_choice = silos.arc_choices[i]
+    local low, high = params:get_range(ring_choice)[1], params:get_range(ring_choice)[2]
+    a:segment(i, util.degs_to_rads(210), util.degs_to_rads(util.linlin(low, high, 210, 309 + 210,  params:get(ring_choice))), 15)
   end
   a:refresh()
 end
