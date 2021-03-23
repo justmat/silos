@@ -51,16 +51,16 @@ Current commands:
     * fx:
     * ``controller id "fx" fx_control_number``
       * ``arc 2 fx 6`` = set arc ring 2 to fx mod_depth
-  * valid ``controllers`` are:
+    * valid ``controllers`` are:
       * enc
       * arc
       * gridx
       * gridy
-  * valid ``id``s are:
+    * valid ``id``s are:
       * enc = 1 - 3
       * arc = 1 - 4
       * gridx/gridy = 1 - 2
-  * engine ``control_number``s are:
+    * engine ``control_number``s are:
       * 1 = gain
       * 2 = position
       * 3 = speed
@@ -72,7 +72,7 @@ Current commands:
       * 9 = dispersal
       * 10 = spread
       * 11 = fx send
-  * ``fx_control_number``s are:
+    * ``fx_control_number``s are:
       * 1 = gain
       * 2 = time
       * 3 = size
