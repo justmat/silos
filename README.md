@@ -86,6 +86,7 @@ Current commands:
       * 11 = bit depth
 
     *nb: control lists can be viewed in app by pressing ESC and using LEFT or RIGHT arrows to navigate*
+    *or by holing norns key 1 and pressing key 3. while holding key 1 use encoder 3 to navigate*
 
   * Control macros:
     * each of the norns encoders has an accompanying macro slot.
