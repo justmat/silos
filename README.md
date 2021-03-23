@@ -51,7 +51,7 @@ Current commands:
     * fx:
     * ``controller id "fx" fx_control_number``
       * ``arc 2 fx 6`` = set arc ring 2 to fx mod_depth
-    * valid ``controllers`` are:
+    * valid ``controller``s are:
       * enc
       * arc
       * gridx
