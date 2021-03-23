@@ -255,8 +255,12 @@ end
 
 
 function enc(n, d)
-  if alt and n == 3 then
-    info_focus = util.clamp(info_focus + d, 1, 5)
+  if alt  then
+    if n == 2 then
+      track = util.clamp(track + d, 1, 4)
+    elseif n == 3 then
+      info_focus = util.clamp(info_focus + d, 1, 5)
+    end
   elseif silos.is_macro[n] then
     for i = 1, #silos.macros[n] do
       params:delta(silos.macros[n][i], d * silos.muls[n][i])
