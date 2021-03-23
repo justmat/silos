@@ -49,15 +49,18 @@ Current commands:
     * ``controller id track control_number`` 
       * ``enc 3 1 6`` = set encoder 3 to track 1 density control.
     * fx:
-    * ``controller id fx fx_control_number``
+    * ``controller id "fx" fx_control_number``
       * ``arc 2 fx 6`` = set arc ring 2 to fx mod_depth
-  * Valid controllers are
+  * valid ``controllers`` are:
       * enc
       * arc
       * gridx
       * gridy
-  * ``id`` = 1-3 for encoders, 1-4 for arc rings, and 1-2 for gridx/y
-  * engine control numbers:
+  * valid ``id``s are:
+      * enc = 1 - 3
+      * arc = 1 - 4
+      * gridx/gridy = 1 - 2
+  * engine ``control_number``s are:
       * 1 = gain
       * 2 = position
       * 3 = speed
@@ -69,7 +72,7 @@ Current commands:
       * 9 = dispersal
       * 10 = spread
       * 11 = fx send
-  * fx control numbers:
+  * ``fx_control_number``s are:
       * 1 = gain
       * 2 = time
       * 3 = size
