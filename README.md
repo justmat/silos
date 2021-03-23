@@ -44,16 +44,20 @@ a live granular instrument for norns
 
 Current commands:
 
-  * Assign engine controls: 
-  * ``controller id track control_number`` 
-    * ``enc 3 1 6`` = set encoder 3 to track 1 density control.
+  * Assign controls:
+    * engine:
+    * ``controller id track control_number`` 
+      * ``enc 3 1 6`` = set encoder 3 to track 1 density control.
+    * fx:
+    * ``controller id fx fx_control_number``
+      * ``arc 2 fx 6`` = set arc ring 2 to fx mod_depth
   * Valid controllers are
       * enc
       * arc
       * gridx
       * gridy
   * ``id`` = 1-3 for encoders, 1-4 for arc rings, and 1-2 for gridx/y
-  * control numbers are
+  * engine control numbers:
       * 1 = gain
       * 2 = position
       * 3 = speed
@@ -65,17 +69,7 @@ Current commands:
       * 9 = dispersal
       * 10 = spread
       * 11 = fx send
-
-  * Assign fx controls:
-  * ``controller id fx fx_control_number``
-    * ``arc 2 fx 6`` = set arc ring 2 to fx mod_depth
-  * Valid controllers are
-      * enc
-      * arc
-      * gridx
-      * gridy
-  * ``id`` = 1-3 for encoders, 1-4 for arc rings, and 1-2 for gridx/y
-  * fx control numbers are
+  * fx control numbers:
       * 1 = gain
       * 2 = time
       * 3 = size
@@ -92,10 +86,10 @@ Current commands:
 
   * Control macros:
     * each of the norns encoders has an accompanying macro slot.
-    * first add controls to the macro slot you want to use.
+    * first add controls to the macro slot you want to use
     * ``macro encoder_id track control_number multiplier``
         * ``macr 3 1 8 .5`` = add track 1 density to macro 3 at half strength
-    * then enable the macro 
+    * then enable the macro
     * ``enc enc_id macro state``
         * ``enc 3 macro 1`` = enable macro control on encoder 3
     * disable the macro by setting its state to 0 
@@ -104,7 +98,7 @@ Current commands:
     * ``macro macro_id clear``
         * ``macro 3 clear`` = clear encoder 3 macro
 
-  *nb: multiplier can be negative numbers!*
+  *nb: multiplier can be negative numbers! this allows one param to increase while others decrease or vice versa*
 
   * set parameters: 
     * ``control_name track value`` 
