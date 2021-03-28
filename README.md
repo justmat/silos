@@ -10,6 +10,7 @@ a live granular instrument for norns
 * speed = playhead speed (-4 - 4) 
 * jitter = position modulation (0 - 100)
 * size = grain size (0 - 500ms)
+* flux = size modulation amount (0 - 1)
 * pitch = grain pitch (-4 - 4)
 * fdbk = feedback (0 - 1)
 * density = frequency of grains (0 - 512hz)
@@ -31,7 +32,7 @@ a live granular instrument for norns
 * lowx = multiplier for the reverberation time within the low band (0 - 1)
 * midx = multiplier for the reverberation time within the mid band (0 - 1)
 * highx = multiplier for the reverberation time within the high band (0 - 1)
-* quality = bit depth
+* quality = bit depth (4/8/12/24/32)
 
 ----------
 
