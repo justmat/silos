@@ -31,7 +31,7 @@ a live granular instrument for norns
 * lowx = multiplier for the reverberation time within the low band (0 - 1)
 * midx = multiplier for the reverberation time within the mid band (0 - 1)
 * highx = multiplier for the reverberation time within the high band (0 - 1)
-* bit depth = bit crushing (4 - 32)
+* quality = bit depth
 
 ----------
 
