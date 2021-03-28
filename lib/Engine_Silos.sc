@@ -41,13 +41,14 @@ Engine_Silos : CroneEngine {
     SynthDef(\synth, {
       arg out, effectBus, phase_out, level_out, buf,
       gate=0, pos=0, speed=1, jitter=0,
-      size=0.1, density=0, density_mod_amt=0, pitch=1, spread=0, gain=1, envscale=1,
+      size=0.1, density=0, density_mod_amt=0, size_mod_amt=0, pitch=1, spread=0, gain=1, envscale=1,
       freeze=0, t_reset_pos=0, send=0;
 
       var grain_trig;
       var jitter_sig;
       var trig_rnd;
       var density_mod;
+      var size_rnd;
       var buf_dur;
       var pan_sig;
       var buf_pos;
@@ -58,6 +59,8 @@ Engine_Silos : CroneEngine {
       trig_rnd = LFNoise1.kr(density);
       density_mod = density * (2**(trig_rnd * density_mod_amt));      
       grain_trig = Impulse.kr(density_mod);
+      
+      size_rnd = LFDNoise0.ar() * size_mod_amt;
 
       buf_dur = BufDur.kr(buf);
 
@@ -82,7 +85,7 @@ Engine_Silos : CroneEngine {
       pos_sig = Wrap.kr(Select.kr(freeze, [buf_pos, pos]));
       
       // TODO: add controlled size randomness
-      sig = GrainBuf.ar(2, grain_trig, size, buf, pitch, pos_sig + jitter_sig, 2, pan_sig, -1.0, 512.0);
+      sig = GrainBuf.ar(2, grain_trig, size + size_rnd, buf, pitch, pos_sig + jitter_sig, 2, pan_sig, -1.0, 512.0);
 
       level = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, timeScale: envscale);
 
@@ -94,10 +97,13 @@ Engine_Silos : CroneEngine {
     }).add;
     
     SynthDef(\effect, {
-      arg in, out, verbgain=1, time=2.0, damp=0.1, verbsize=4.0, diff=0.7, modDepth=0.1, modFreq=0.1, low=0.5, mid=1, high=1, lowcut=5000, highcut=2000;
+      arg in, out, fxgain=1, time=60.0, damp=0.1, verbsize=4.0, diff=0.7, modDepth=0.1,
+        modFreq=0.1, low=0.5, mid=1, high=1, lowcut=5000, highcut=2000, sampleRate=48000, bitDepth=32;
+
       var sig = In.ar(in, 2);
       sig = JPverb.ar(sig, time, damp, verbsize, diff, modDepth, modFreq, low, mid, high, lowcut, highcut);
-      Out.ar(out, sig * verbgain);
+      sig = Decimator.ar(sig, sampleRate, bitDepth);
+      Out.ar(out, sig * fxgain);
     }).add;
 
     context.server.sync;
@@ -131,7 +137,7 @@ Engine_Silos : CroneEngine {
 
     context.server.sync;
     
-    this.addCommand("time", "f", { arg msg; effect.set(\delayTime, msg[1]); });
+    this.addCommand("time", "f", { arg msg; effect.set(\time, msg[1]); });
     this.addCommand("damp", "f", { arg msg; effect.set(\damp, msg[1]); });
     this.addCommand("verbsize", "f", { arg msg; effect.set(\verbsize, msg[1]); });
     this.addCommand("diff", "f", { arg msg; effect.set(\diff, msg[1]); });
@@ -142,7 +148,9 @@ Engine_Silos : CroneEngine {
     this.addCommand("high", "f", { arg msg; effect.set(\high, msg[1]); });
     this.addCommand("lowcut", "f", { arg msg; effect.set(\lowcut, msg[1]); });
     this.addCommand("highcut", "f", { arg msg; effect.set(\highcut, msg[1]); });
-    this.addCommand("verbgain", "f", { arg msg; effect.set(\verbgain, msg[1]); });
+    this.addCommand("fxgain", "f", { arg msg; effect.set(\fxgain, msg[1]); });
+    //this.addCommand("sample_rate", "f", { arg msg; effect.set(\sampleRate, msg[1]); });
+    this.addCommand("bit_depth", "f", { arg msg; effect.set(\bitDepth, msg[1]); });
 
     this.addCommand("read", "is", { arg msg;
       var voice = msg[1] - 1;
@@ -190,6 +198,11 @@ Engine_Silos : CroneEngine {
     this.addCommand("size", "if", { arg msg;
       var voice = msg[1] - 1;
       voices[voice].set(\size, msg[2]);
+    });
+    
+    this.addCommand("size_mod_amt", "if", { arg msg;
+      var voice = msg[1] - 1;
+      voices[voice].set(\size_mod_amt, msg[2]);
     });
 
     this.addCommand("density", "if", { arg msg;
