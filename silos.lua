@@ -57,6 +57,8 @@ local fx_controls = {
 
 -- for saving state
 local silos = {}
+silos.grid_mode = 1
+silos.grid_modes = {"2xy", "snaps"}
 -- current control choices for enc/arc/grid
 silos.enc_choices = {"1gain", "1position", "1speed"}
 silos.arc_choices = {"1jitter", "1spread", "1density", "1pitch"}
@@ -125,7 +127,7 @@ function init()
 
   params:add_separator()
   for i = 1, 4 do
-    params:add_group("track " .. i, 13)
+    params:add_group("track " .. i, 14)
 
     params:add_number(i .. "gate", i .. " gate", 0, 1, 0)
     params:set_action(i .. "gate", function(value) engine.gate(i, value) end)
@@ -147,6 +149,9 @@ function init()
 
     params:add_taper(i .. "size", i .. " size", 1, 500, 150, 5, "ms")
     params:set_action(i .. "size", function(value) engine.size(i, value / 1000) end)
+    
+    params:add_taper(i .. "flux", i .. " flux", 0, 1, 0, 0, "")
+    params:set_action(i .. "flux", function(value) engine.size_mod_amt(i, value) end)
 
     params:add_taper(i .. "density", i .. " density", 0, 512, 32, 6, "hz")
     params:set_action(i .. "density", function(value) engine.density(i, value) end)
@@ -453,7 +458,7 @@ end
 
 -- grid ----------
 
-function g.key(x, y, z)
+function grid_2xy(x, y, z)
   -- two 8x8 x/y pads
   if x <= 8  and z == 1 then
     -- left x/y pad
@@ -476,10 +481,18 @@ function g.key(x, y, z)
     params:set(grid_choicey, y_scaled)
 
   end
+end
+
+
+function g.key(x, y, z)
+  if silos.grid_mode == 1 then
+    grid_2xy(x, y, z)
+  elseif silos.grid_mode == 2 then
+    -- snapshot mode
+  end
   g.redraw()
   is_dirty = true
 end
-
 
 function g.redraw()
   g:all(0)
@@ -590,6 +603,7 @@ function keyboard.code(code,value)
       end
     elseif code == "ENTER" then
       -- parse string for commands
+      -- there is likely a better way to do this sort of thing
       local command = split_string(my_string)
       -- rand
       if command[1] == "rand" then
