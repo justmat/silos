@@ -85,7 +85,7 @@ Engine_Silos : CroneEngine {
       pos_sig = Wrap.kr(Select.kr(freeze, [buf_pos, pos]));
       
       // TODO: add controlled size randomness
-      sig = GrainBuf.ar(2, grain_trig, size + size_rnd, buf, pitch, pos_sig + jitter_sig, 2, pan_sig, -1.0, 512.0);
+      sig = GrainBuf.ar(2, grain_trig, Clip.ar(size + size_rnd, 1.00, 500.00), buf, pitch, pos_sig + jitter_sig, 2, pan_sig, -1.0, 512.0);
 
       level = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, timeScale: envscale);
 
