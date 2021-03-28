@@ -133,7 +133,7 @@ function init()
 
   params:add_separator()
   for i = 1, 4 do
-    params:add_group("track " .. i, 14)
+    params:add_group("track " .. i, 17)
 
     params:add_number(i .. "gate", i .. " gate", 0, 1, 0)
     params:set_action(i .. "gate", function(value) engine.gate(i, value) end)
@@ -170,6 +170,15 @@ function init()
 
     params:add_taper(i .. "spread", i .. " spread", 0, 100, 35, 0, "%")
     params:set_action(i .. "spread", function(value) engine.spread(i, value / 100) end)
+
+    params:add_taper(i .. "cutoff", i .. " cutoff", 20, 18000, 18000, 6, "")
+    params:set_action(i .. "cutoff", function(value) engine.filter_freq(i, value) end)
+
+    params:add_taper(i .. "q", i .. " q", 0, 1, 0, 0, "")
+    params:set_action(i .. "q", function(value) engine.filter_res(i, value) end)
+
+    params:add_number(i .. "filter_type", i .. " filter_type", 0, 1, 0)
+    params:set_action(i .. "filter_type", function(value) engine.filter_type(i, value) end)
 
     params:add_control(i .. "fdbk", i .." fdbk", controlspec.new(0.0, 1.0, "lin", 0.01, 0))
     params:set_action(i .. "fdbk", function(value) engine.pre_level(i, value) end)
