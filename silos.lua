@@ -52,8 +52,14 @@ local fx_controls = {
   "lowx",
   "midx",
   "highx",
-  "bit_depth"
+  "quality"
 }
+
+local bit_depths = {4, 8, 10, 12, 32}
+
+local function set_quality(v)
+  engine.bit_depth(bit_depths[v])
+end
 
 -- for saving state
 local silos = {}
@@ -209,8 +215,8 @@ function init()
   params:add_taper("highcross", "*" .. "high crossover", 1000.0, 10000.0, 1024.0, 0, "")
   params:set_action("highcross", function(value) engine.highcut(value) end)
   -- bit depth
-  params:add_taper("bit_depth", "*bit depth", 4, 32, 32, 0, "")
-  params:set_action("bit_depth", function(value) engine.bit_depth(value) end)
+  params:add_option("quality", "*quality", bit_depths, 5)
+  params:set_action("quality", function(value) set_quality(value) end)
   -- reverb output volume
   params:add_taper("fx_gain", "*" .. "gain", 0.0, 1.0, 0.50, 0, "")
   params:set_action("fx_gain", function(value) engine.fxgain(value) end)
