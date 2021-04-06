@@ -3,11 +3,11 @@ a live granular instrument for norns
 ![](assets/silos.png)
 —————
 
-### silos granular engine contains 4 tracks, each with its own 8 second buffer. the parameters for controlling the engine are:
+### silos granular engine contains 3 tracks, each with its own 8 second buffer. the parameters for controlling the engine are:
 
 * gain = output level for the voice (0 - 1)
 * position = position within the buffer (0 - 1)
-* speed = playhead speed (-4 - 4) 
+* speed = playhead speed (-4 - 4)
 * jitter = position modulation (0 - 100)
 * size = grain size (0 - 500ms)
 * flux = size modulation amount (0 - 1)
@@ -47,7 +47,7 @@ Current commands:
 
   * Assign controls:
     * engine:
-    * ``controller id track control_number`` 
+    * ``controller id track control_number``
       * ``enc 3 1 6`` = set encoder 3 to track 1 density control.
     * fx:
     * ``controller id "fx" fx_control_number``
@@ -86,7 +86,7 @@ Current commands:
       * 10 = highx
       * 11 = bit depth
 
-    *nb: control lists can be viewed in app by pressing ESC and using LEFT or RIGHT arrows to navigate, 
+    *nb: control lists can be viewed in app by pressing ESC and using LEFT or RIGHT arrows to navigate,
     or by holding norns key 1 and pressing key 3. while holding key 1 use encoder 3 to navigate*
 
   * Control macros:
@@ -97,7 +97,7 @@ Current commands:
     * then enable the macro
     * ``enc enc_id macro state``
         * ``enc 3 macro 1`` = enable macro control on encoder 3
-    * disable the macro by setting its state to 0 
+    * disable the macro by setting its state to 0
       * ``enc 3 macro 0``
     * clear the macro with
     * ``macro macro_id clear``
@@ -105,12 +105,12 @@ Current commands:
 
   *nb: multiplier can be negative numbers! this allows one param to increase while others decrease or vice versa*
 
-  * set parameters: 
-    * ``control_name track value`` 
+  * set parameters:
+    * ``control_name track value``
       * ``size 2 150`` = set track 2 size to 150ms
-    * ``rand track control_number`` 
+    * ``rand track control_number``
       * ``rand 1 8`` = set track 1 spread to a random value
-    * ``rrand track control_number low high`` 
+    * ``rrand track control_number low high``
       * ``rrand 4 5 10 150`` = set track 4 size to a random value between 10 and 150
 
   * set multiple parameters:
@@ -120,7 +120,7 @@ Current commands:
       * ``records 0 0 0 1`` = set records 1, 2, and 3 off, record 4 on
     * ``gates`` and ``records`` have the aliases ``g`` and ``r`` for convenience
       * ``g 1 1 0 1`` and ``r 0 0 1 0`` are valid
-  
+
 
   * store and recall parameter snapshots
     * ``snap id track``
@@ -128,7 +128,7 @@ Current commands:
     * ``load id track``
       * ``recall 5 3`` = recall track 3 parameter snapshot in slot 5
     * ``id`` = a number 1-16
-    * ``snap`` and ``load`` have the aliases ``s`` and ``l`` for convenience 
+    * ``snap`` and ``load`` have the aliases ``s`` and ``l`` for convenience
       * ``s 1 1`` and ``l 1 1`` are valid
 
   * save and load state
@@ -151,4 +151,4 @@ Current commands:
         * page 2 = reverb parameters
         * page 2 = encoder/arc assignments
         * page 3 = gridx/y assignments
-        
+
