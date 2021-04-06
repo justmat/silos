@@ -45,7 +45,13 @@ stuff
 stuff
 
 -- grid control example (xy^2)
-stuff
+the grid has two modes of operation. 2 8x8 x/y pads
+
+![](assets/gridxy2.png)
+
+or snapshot mode.
+
+![](assets/gridsnap.png)
 
 
 -----------
