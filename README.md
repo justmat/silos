@@ -84,7 +84,7 @@ Current commands:
       * 8 = lowx
       * 9 = midx
       * 10 = highx
-      * 11 = bit depth
+      * 11 = quality
 
     *nb: control lists can be viewed in app by pressing ESC and using LEFT or RIGHT arrows to navigate,
     or by holding norns key 1 and pressing key 3. while holding key 1 use encoder 3 to navigate*
@@ -93,7 +93,9 @@ Current commands:
     * each of the norns encoders has an accompanying macro slot.
     * first add controls to the macro slot you want to use
     * ``macro encoder_id track control_number multiplier``
-        * ``macr 3 1 8 .5`` = add track 1 density to macro 3 at half strength
+        * ``macro 3 1 8 .5`` = add track 1 density to macro 3 at half strength
+        * ``macro 3 2 5 -1`` = add track 2 size to macro 3 at -1 strength (full speed backwards)
+        * ``macro 3 fx 6 1`` = add the reverb modulation depth control to macro 3 and full strength
     * then enable the macro
     * ``enc enc_id macro state``
         * ``enc 3 macro 1`` = enable macro control on encoder 3
@@ -117,8 +119,8 @@ Current commands:
     * ``gates state1 state2 state3 state4``
       * ``gate 1 1 0 1`` = set gates 1, 2, and 4 to on, gate 3 to off
     * ``records state1 state2 state3 state4``
-      * ``records 0 0 0 1`` = set records 1, 2, and 3 off, record 4 on
-    * ``gates`` and ``records`` have the aliases ``g`` and ``r`` for convenience
+      * ``record 0 0 0 1`` = set records 1, 2, and 3 off, record 4 on
+    * ``gate`` and ``record`` have the aliases ``g`` and ``r`` for convenience
       * ``g 1 1 0 1`` and ``r 0 0 1 0`` are valid
 
 
