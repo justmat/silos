@@ -84,7 +84,7 @@ Current commands:
       * 8 = lowx
       * 9 = midx
       * 10 = highx
-      * 11 = bit depth
+      * 11 = quality
 
     *nb: control lists can be viewed in app by pressing ESC and using LEFT or RIGHT arrows to navigate,
     or by holding norns key 1 and pressing key 3. while holding key 1 use encoder 3 to navigate*
