@@ -38,7 +38,14 @@ a live granular instrument for norns
 
 # quick start
 
--- TODO
+-- norns control example
+stuff
+
+-- arc control example
+stuff
+
+-- grid control example (xy^2)
+stuff
 
 
 -----------
