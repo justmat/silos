@@ -6,7 +6,6 @@ Engine_Silos : CroneEngine {
   var <recorders;
   var <voices;
   var <phases;
-  var <levels;
   var effect;
   var effectBus;
 
@@ -39,7 +38,7 @@ Engine_Silos : CroneEngine {
     }).add;
 
     SynthDef(\synth, {
-      arg out, effectBus, phase_out, level_out, buf,
+      arg out, effectBus, phase_out, buf,
       gate=0, pos=0, speed=1, jitter=0,
       size=0.1, density=0, density_mod_amt=0, size_mod_amt=0, pitch=1, spread=0, gain=1, envscale=1,
       freeze=0, t_reset_pos=0, send=0;
@@ -91,10 +90,8 @@ Engine_Silos : CroneEngine {
       level = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, timeScale: envscale);
 
       Out.ar(out, sig * level * gain);
-
-      Out.kr(phase_out, pos_sig);
-      Out.kr(level_out, level); // ignore gain for level out
       Out.ar(effectBus, sig * level * send);
+      Out.kr(phase_out, pos_sig);
     }).add;
 
     SynthDef(\effect, {
@@ -109,13 +106,12 @@ Engine_Silos : CroneEngine {
 
     context.server.sync;
 
-    // reverb bus
+    // fx bus
     effectBus = Bus.audio(context.server, 2);
 
     effect = Synth.new(\effect, [\in, effectBus.index, \out, context.out_b.index], target: context.xg);
 
     phases = Array.fill(num_voices, { arg i; Bus.control(context.server); });
-    levels = Array.fill(num_voices, { arg i; Bus.control(context.server); });
 
     pg = ParGroup.head(context.xg);
 
@@ -124,7 +120,6 @@ Engine_Silos : CroneEngine {
         \out, context.out_b.index,
         \effectBus, effectBus.index,
         \phase_out, phases[i].index,
-        \level_out, levels[i].index,
         \buf, buffers[i],
       ], target: pg);
     });
@@ -150,13 +145,7 @@ Engine_Silos : CroneEngine {
     this.addCommand("lowcut", "f", { arg msg; effect.set(\lowcut, msg[1]); });
     this.addCommand("highcut", "f", { arg msg; effect.set(\highcut, msg[1]); });
     this.addCommand("fxgain", "f", { arg msg; effect.set(\fxgain, msg[1]); });
-    //this.addCommand("sample_rate", "f", { arg msg; effect.set(\sampleRate, msg[1]); });
     this.addCommand("bit_depth", "f", { arg msg; effect.set(\bitDepth, msg[1]); });
-
-    this.addCommand("read", "is", { arg msg;
-      var voice = msg[1] - 1;
-      this.readBuf(voice, msg[2]);
-    });
 
     this.addCommand("record", "ii", { arg msg;
       var voice = msg[1] - 1;
@@ -246,18 +235,12 @@ Engine_Silos : CroneEngine {
         var val = phases[i].getSynchronous;
         val
       });
-
-      this.addPoll(("level_" ++ (i + 1)).asSymbol, {
-        var val = levels[i].getSynchronous;
-        val
-      });
     });
   }
 
   free {
     voices.do({ arg voice; voice.free; });
     phases.do({ arg bus; bus.free; });
-    levels.do({ arg bus; bus.free; });
     buffers.do({ arg b; b.free; });
     recorders.do({ arg r; r.free; });
     effect.free;
