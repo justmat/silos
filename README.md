@@ -73,7 +73,31 @@ use **alt + enc 3** or your **LEFT/RIGHT** arrow keys to navigate.
 
 -----------
 
-### the command prompt
+## arc
+![](assets/silos-arc.png)
+
+the arc adds four extra encoders. assign controls with ``arc id track/fx control_number``
+* `` arc 1 3 4`` = assign track 3 jitter to arc ring 1
+* ``arc 4 fx 1`` = assign fx gain to arc ring 4
+
+## grid
+
+the grid has two modes of operation. mode 1 is two 8x8 **x/y** pads, mode 2 is **snapshot** mode. switch modes with ``grid_mode n`` where n = 1 or 2. more grid modes will likely be added in the future.
+
+### x/y mode
+![](assets/xy-grid.png)
+assign controls to the x/y coordinates using ``gridx`` or ``gridy``.
+
+``gridx id track/fx control_number``
+  * ``gridy 2 1 5`` = assign track 1 size to the second y coordinate (right side oof grid)
+  * ``gridx 1 fx 1`` = assign fx gain to the first x coordinate (left side of grid)
+
+### snapshot mode
+![](assets/snap-grid.png)
+in snapshot mode holding the lower dimly lit cell and pressing one of the top 3 rows will save a snapshot of your parameter settings. row 1 will save snaps for track 1, row 2 track 2, and so on. 
+a cell containing a snapshot will glow brightly. pressing a brightly lit cell will recall the associated snapshot. 
+
+## the command prompt
 
 there are several commands to configure controls, set parameter values, and save/load various sets of data.
 
@@ -186,28 +210,3 @@ there are several commands to configure controls, set parameter values, and save
   * esc = toggle info display
     * while info display is active, left and right arrow keys navigate info pages
         
-----------
-
-## arc
-![](assets/silos-arc.png)
-
-the arc adds four extra encoders. assign controls with ``arc id track/fx control_number``
-* `` arc 1 3 4`` = assign track 3 jitter to arc ring 1
-* ``arc 4 fx 1`` = assign fx gain to arc ring 4
-
-## grid
-
-the grid has two modes of operation. mode 1 is two 8x8 **x/y** pads, mode 2 is **snapshot** mode. switch modes with ``grid_mode n`` where n = 1 or 2. more grid modes will likely be added in the future.
-
-### x/y mode
-![](assets/xy-grid.png)
-assign controls to the x/y coordinates using ``gridx`` or ``gridy``.
-
-``gridx id track/fx control_number``
-  * ``gridy 2 1 5`` = assign track 1 size to the second y coordinate (right side oof grid)
-  * ``gridx 1 fx 1`` = assign fx gain to the first x coordinate (left side of grid)
-
-### snapshot mode
-![](assets/snap-grid.png)
-in snapshot mode holding the lower dimly lit cell and pressing one of the top 3 rows will save a snapshot of your parameter settings. row 1 will save snaps for track 1, row 2 track 2, and so on. 
-a cell containing a snapshot will glow brightly. pressing a brightly lit cell will recall the associated snapshot. 
