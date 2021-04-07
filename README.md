@@ -54,7 +54,7 @@ launching silos lands you in a fairly minimal state. in the top right corner of 
 
 * alt + key 3 = info display toggle
 
-if you'd like to see a bit more information, press **alt + key 3** or **ESC** on your keyboard, to toggle the info display. there are pages for **engine parameters**, **fx**, **control assignments**, and **snapshots**.
+if you'd like to see a bit more information, press **alt + key 3** or **ESC** on your keyboard to toggle the info display. there are pages for **engine parameters**, **fx**, **control assignments**, and **snapshots**.
 
 use **alt + enc 3** or your **LEFT/RIGHT** arrow keys to navigate.
 
@@ -77,6 +77,7 @@ use **alt + enc 3** or your **LEFT/RIGHT** arrow keys to navigate.
 ![](assets/silos-arc.png)
 
 the arc adds four extra encoders. assign controls with ``arc id track/fx control_number``
+
 * `` arc 1 3 4`` = assign track 3 jitter to arc ring 1
 * ``arc 4 fx 1`` = assign fx gain to arc ring 4
 
@@ -94,18 +95,16 @@ assign controls to the x/y coordinates using ``gridx`` or ``gridy``.
 
 ### snapshot mode
 ![](assets/snap-grid.png)
-in snapshot mode holding the lower dimly lit cell and pressing one of the top 3 rows will save a snapshot of your parameter settings. row 1 will save snaps for track 1, row 2 track 2, and so on. 
+in snapshot mode, holding the lower dimly lit cell and pressing one of the top 3 rows will save a snapshot of your parameter settings. row 1 will save snaps for track 1, row 2 track 2, and so on. 
 a cell containing a snapshot will glow brightly. pressing a brightly lit cell will recall the associated snapshot. 
 
 ## the command prompt
 
 there are several commands to configure controls, set parameter values, and save/load various sets of data.
 
-* Assign controls:
-    * engine: ``controller id track control_number``
-      * ``enc 3 1 6`` = set encoder 3 to track 1 density control.
-    * fx: ``controller id "fx" fx_control_number``
-      * ``arc 2 fx 6`` = set arc ring 2 to fx mod_depth
+### Assign controls:
+  * engine: ``controller id track control_number``
+  * fx: ``controller id "fx" fx_control_number``
     * valid ``controller``s are:
       * enc
       * arc
@@ -139,30 +138,34 @@ there are several commands to configure controls, set parameter values, and save
       * 9 = midx
       * 10 = highx
       * 11 = quality
+  * for example:
+    * ``enc 3 1 6`` = set encoder 3 to track 1 density control
+    * ``arc 2 fx 6`` = set arc ring 2 to fx mod_depth
 
     *nb: control lists can be viewed in app by toggling info display*
 
-  * Control macros:
-    * each of the norns encoders has an accompanying macro slot.
-    * first add controls to the macro slot you want to use
+
+### build control macros: each of the norns encoders has an accompanying macro slot.
+
+  * first add controls to the macro slot you want to use
     * ``macro encoder_id track control_number multiplier``
         * ``macro 3 1 8 .5`` = add track 1 density to macro 3 at half strength
         * ``macro 3 2 5 -1`` = add track 2 size to macro 3 at -1 strength (full speed backwards)
         * ``macro 3 fx 6 1`` = add the reverb modulation depth control to macro 3 and full strength
-    * then enable the macro
+  * enable the macro
     * ``enc enc_id macro state``
         * ``enc 3 macro 1`` = enable macro control on encoder 3
-    * disable the macro by setting its state to 0
+  * disable the macro by setting its state to 0
       * ``enc 3 macro 0``
-    * clear the macro with
+  * clear the macro with
     * ``macro macro_id clear``
         * ``macro 3 clear`` = clear encoder 3 macro
 
-  *nb: multiplier can be negative numbers! this allows one param to increase while others decrease or vice versa*
+*nb: multiplier can be negative numbers! this allows one param to increase while others decrease or vice versa*
 
 ----------
 
-* set parameters:
+### set parameters:
   * ``control_name track value``
     * ``size 2 150`` = set track 2 size to 150ms
   * ``rand track control_number``
@@ -170,17 +173,17 @@ there are several commands to configure controls, set parameter values, and save
   * ``rrand track control_number low high``
     * ``rrand 3 5 10 150`` = set track 3 size to a random value between 10 and 150
 
-* set multiple parameters:
+### set multiple parameters:
   * ``gates state1 state2 state3``
     * ``gate 1 1 0`` = set gates 1 and 2 to on, gate 3 to off
-  * ``records state1 state2 state3 state4``
-    * ``record 0 0 0 1`` = set records 1, 2, and 3 off, record 4 on
+  * ``records state1 state2 state3``
+    * ``record 0 0 0 1`` = set records 1, 2, and 3 off
   * ``gate`` and ``record`` have the aliases ``g`` and ``r`` for convenience
-    * ``g 1 1 0 1`` and ``r 0 0 1 0`` are valid
+    * ``g 1 1 0 `` and ``r 0 0 1 `` are valid
 
 ----------
 
-* store and recall parameter snapshots
+### store and recall parameter snapshots
   * ``snap id track``
     * ``snap 10 2`` = save a parameter snapshot for track 2 in slot 10
   * ``load id track``
@@ -189,13 +192,13 @@ there are several commands to configure controls, set parameter values, and save
   * ``snap`` and ``load`` have the aliases ``s`` and ``l`` for convenience
     * ``s 1 1`` and ``l 1 1`` are valid
 
-* save and load state
+### save and load state
   * ``save_state id``
     * ``save_state test`` = save your current script state in a file called ``test.state``
   * ``load_state id``
     * ``load_state new_song`` = load ``new_song.state`` if it exists.
 
-* save and load pset
+### save and load pset
   * ``save_pset`` = this is the same as saving a pset in the parameters menu.
   * ``load_pset`` = this is the same as loading a pset in the parameters menu.
 
@@ -203,7 +206,7 @@ there are several commands to configure controls, set parameter values, and save
 
 ----------
 
-* key bindings
+### key bindings
   * ctrl + g = toggle gate
   * ctrl + r = toggle record
   * ctrl + (1-3) = track select
