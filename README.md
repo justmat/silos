@@ -183,7 +183,7 @@ there are several commands to configure controls, set parameter values, and save
 * key bindings
   * ctrl + g = toggle gate
   * ctrl + r = toggle record
-  * ctrl + (1-4) = track select
+  * ctrl + (1-3) = track select
   * esc = toggle info display
     * while info display is active, left and right arrow keys navigate info pages
         
