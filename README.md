@@ -150,18 +150,20 @@ Current commands:
     * ``snap id track``
       * ``snap 10 2`` = save a parameter snapshot for track 2 in slot 10
     * ``load id track``
-      * ``recall 5 3`` = recall track 3 parameter snapshot in slot 5
+      * ``load 5 3`` = recall track 3 parameter snapshot in slot 5
     * ``id`` = a number 1-16
     * ``snap`` and ``load`` have the aliases ``s`` and ``l`` for convenience
       * ``s 1 1`` and ``l 1 1`` are valid
 
   * save and load state
     * ``save_state id``
+      * ``save_state test`` = save your current script state in a file called ``test.state``
     * ``load_state id``
+      * ``load_state new_song`` = load ``new_song.state`` if it exists.
 
   * save and load pset
-    * ``save_pset``
-    * ``load_pset``
+    * ``save_pset`` = this is the same as saving a pset in the parameters menu.
+    * ``load_pset`` = this is the same as loading a pset in the parameters menu.
 
   *nb: state includes control assignments, macros, snapshots etc... pset is the parameter values*
 
