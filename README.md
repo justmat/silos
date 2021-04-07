@@ -54,10 +54,9 @@ launching silos lands you in a fairly minimal state. in the top right corner of 
 
 * alt + key 3 = info display toggle
 
-if you'd like to see a bit more information, press **alt + key 3** or **ESC** on your keyboard, to toggle the info display.
+if you'd like to see a bit more information, press **alt + key 3** or **ESC** on your keyboard, to toggle the info display. there are pages for **engine parameters**, **fx**, **control assignments**, and **snapshots**.
 
-use **alt + enc 3** or your **LEFT/RIGHT** arrow keys to navigate through the info display pages.
-there are pages for **engine parameters**, **fx**, **control assignments**, and **snapshots**.
+use **alt + enc 3** or your **LEFT/RIGHT** arrow keys to navigate.
 
 ### engine parameters
 ![](assets/silos-info-m.png)
