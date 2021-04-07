@@ -36,23 +36,32 @@ a live granular instrument for norns
 
 ----------
 
-# quick start
+# control
 
--- norns control example
+## norns
+
 stuff
 
--- arc control example
+## arc
+
 stuff
 
--- grid control example (xy^2)
-the grid has two modes of operation. 2 8x8 x/y pads
+## grid
 
-![](assets/gridxy2.png)
+the grid has two modes of operation. mode 1 is two 8x8 x/y pads, mode 2 is snapshot mode. switch modes with ``grid_mode n`` where n = 1 or 2. more grid modes will likely be added in the future.
 
-or snapshot mode.
+### x/y mode
+![](assets/xy-grid.png)
+assign controls to the x/y coordinates using ``gridx`` or ``gridy``.
 
-![](assets/gridsnap.png)
+``gridx id track/fx control_number``
+  * ``gridy 2 1 5`` = assign track 1 size to the second y coordinate (right side oof grid)
+  * ``gridx 1 fx 1`` = assign fx gain to the first x coordinate (left side of grid)
 
+### snapshot mode
+![](assets/snap-grid.png)
+in snapshot mode holding the lower dimly lit cell and pressing one of the top 3 rows will save a snapshot of your parameter settings. row 1 will save snaps for track 1, row 2 track 2, and so on. 
+a cell containing a snapshot will glow brightly. pressing a brightly lit cell will recall the associated snapshot.
 
 -----------
 
