@@ -7,7 +7,7 @@
 -- engine.
 --
 
-engine.name = "Silos"
+engine.name = "Thresh"
 
 local tabutil = require 'tabutil'
 

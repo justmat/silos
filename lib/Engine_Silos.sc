@@ -1,4 +1,4 @@
-Engine_Silos : CroneEngine {
+Engine_Thresh : CroneEngine {
   classvar num_voices = 3;
 
   var pg;
