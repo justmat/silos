@@ -1,4 +1,4 @@
-Engine_Thresh : CroneEngine {
+Engine_Thresher : CroneEngine {
   classvar num_voices = 3;
 
   var pg;
