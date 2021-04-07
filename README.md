@@ -33,7 +33,7 @@ a live granular instrument for norns
 * lowx = multiplier for the reverberation time within the low band (0 - 1)
 * midx = multiplier for the reverberation time within the mid band (0 - 1)
 * highx = multiplier for the reverberation time within the high band (0 - 1)
-* quality = bit depth (4/8/12/24/32)
+* quality = bit depth (4/8/12/32)
 
 ----------
 
@@ -43,7 +43,7 @@ a live granular instrument for norns
 
 ![](assets/silos-min-m.png)
 
-launching silos lands you in a fairly minimal state. in the top right corner of your screen are indicators for gate, recording, and your current track. at the bottom of your screen you'll find the command prompt.
+launching silos lands you in a fairly minimal state. in the top right corner of your screen are indicators for gate, recording, and your current track number. at the bottom of your screen you'll find the command prompt.
 
 * key 1 = alt
 * key 2 = gate toggle
