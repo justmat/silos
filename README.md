@@ -1,7 +1,8 @@
 # silos
 a live granular instrument for norns
 ![](assets/silos.png)
-—————
+
+----------
 
 #### silos granular engine contains 3 tracks, each with its own 8 second buffer. the parameters for controlling the engine are:
 
@@ -40,42 +41,47 @@ a live granular instrument for norns
 
 ## norns
 
-stuff
+![](assets/silos-min-m.png)
 
-## arc
-![](assets/silos-arc.png)
+launching silos lands you in a fairly minimal state. in the top right corner of your screen are indicators for gate, recording, and your current track. at the bottom of your screen you'll find the command prompt.
 
-the arc adds four extra encoders. assign controls with ``arc id track/fx control_number``
-* `` arc 1 3 4`` = assign track 3 jitter to arc ring 1
-* ``arc 4 fx 1`` = assign fx gain to arc ring 4
+* key 1 = alt
+* key 2 = gate toggle
+* key 3 = record toggle
 
-## grid
+* alt + enc 2 = track select
+* alt + enc 3 = info display navigation
 
-the grid has two modes of operation. mode 1 is two 8x8 x/y pads, mode 2 is snapshot mode. switch modes with ``grid_mode n`` where n = 1 or 2. more grid modes will likely be added in the future.
+* alt + key 3 = info display toggle
 
-### x/y mode
-![](assets/xy-grid.png)
-assign controls to the x/y coordinates using ``gridx`` or ``gridy``.
+if you'd like to see a bit more information, press **alt + key 3** or **ESC** on your keyboard, to toggle the info display.
 
-``gridx id track/fx control_number``
-  * ``gridy 2 1 5`` = assign track 1 size to the second y coordinate (right side oof grid)
-  * ``gridx 1 fx 1`` = assign fx gain to the first x coordinate (left side of grid)
+use **alt + enc 3** or your **LEFT/RIGHT** arrow keys to navigate through the info display pages.
+there are pages for **engine parameters**, **fx**, **control assignments**, and **snapshots**.
 
-### snapshot mode
-![](assets/snap-grid.png)
-in snapshot mode holding the lower dimly lit cell and pressing one of the top 3 rows will save a snapshot of your parameter settings. row 1 will save snaps for track 1, row 2 track 2, and so on. 
-a cell containing a snapshot will glow brightly. pressing a brightly lit cell will recall the associated snapshot.
+### engine parameters
+![](assets/silos-info-m.png)
+
+### fx
+![](assets/silos-fx-m.png)
+
+### control assignments
+![](assets/silos-ctrls-m.png)
+![](assets/silos-ctrls2-m.png)
+
+### snapshots
+![](assets/silos-snaps-m.png)
 
 -----------
 
-Current commands:
+### the command prompt
 
-  * Assign controls:
-    * engine:
-    * ``controller id track control_number``
+there are several commands to configure controls, set parameter values, and save/load various sets of data.
+
+* Assign controls:
+    * engine: ``controller id track control_number``
       * ``enc 3 1 6`` = set encoder 3 to track 1 density control.
-    * fx:
-    * ``controller id "fx" fx_control_number``
+    * fx: ``controller id "fx" fx_control_number``
       * ``arc 2 fx 6`` = set arc ring 2 to fx mod_depth
     * valid ``controller``s are:
       * enc
@@ -111,8 +117,7 @@ Current commands:
       * 10 = highx
       * 11 = quality
 
-    *nb: control lists can be viewed in app by pressing ESC and using LEFT or RIGHT arrows to navigate,
-    or by holding norns key 1 and pressing key 3. while holding key 1 use encoder 3 to navigate*
+    *nb: control lists can be viewed in app by toggling info display*
 
   * Control macros:
     * each of the norns encoders has an accompanying macro slot.
@@ -132,52 +137,78 @@ Current commands:
 
   *nb: multiplier can be negative numbers! this allows one param to increase while others decrease or vice versa*
 
-  * set parameters:
-    * ``control_name track value``
-      * ``size 2 150`` = set track 2 size to 150ms
-    * ``rand track control_number``
-      * ``rand 1 8`` = set track 1 spread to a random value
-    * ``rrand track control_number low high``
-      * ``rrand 4 5 10 150`` = set track 4 size to a random value between 10 and 150
+----------
 
-  * set multiple parameters:
-    * ``gates state1 state2 state3 state4``
-      * ``gate 1 1 0 1`` = set gates 1, 2, and 4 to on, gate 3 to off
-    * ``records state1 state2 state3 state4``
-      * ``record 0 0 0 1`` = set records 1, 2, and 3 off, record 4 on
-    * ``gate`` and ``record`` have the aliases ``g`` and ``r`` for convenience
-      * ``g 1 1 0 1`` and ``r 0 0 1 0`` are valid
+* set parameters:
+  * ``control_name track value``
+    * ``size 2 150`` = set track 2 size to 150ms
+  * ``rand track control_number``
+    * ``rand 1 8`` = set track 1 spread to a random value
+  * ``rrand track control_number low high``
+    * ``rrand 3 5 10 150`` = set track 3 size to a random value between 10 and 150
 
+* set multiple parameters:
+  * ``gates state1 state2 state3``
+    * ``gate 1 1 0`` = set gates 1 and 2 to on, gate 3 to off
+  * ``records state1 state2 state3 state4``
+    * ``record 0 0 0 1`` = set records 1, 2, and 3 off, record 4 on
+  * ``gate`` and ``record`` have the aliases ``g`` and ``r`` for convenience
+    * ``g 1 1 0 1`` and ``r 0 0 1 0`` are valid
 
-  * store and recall parameter snapshots
-    * ``snap id track``
-      * ``snap 10 2`` = save a parameter snapshot for track 2 in slot 10
-    * ``load id track``
-      * ``load 5 3`` = recall track 3 parameter snapshot in slot 5
-    * ``id`` = a number 1-16
-    * ``snap`` and ``load`` have the aliases ``s`` and ``l`` for convenience
-      * ``s 1 1`` and ``l 1 1`` are valid
+----------
 
-  * save and load state
-    * ``save_state id``
-      * ``save_state test`` = save your current script state in a file called ``test.state``
-    * ``load_state id``
-      * ``load_state new_song`` = load ``new_song.state`` if it exists.
+* store and recall parameter snapshots
+  * ``snap id track``
+    * ``snap 10 2`` = save a parameter snapshot for track 2 in slot 10
+  * ``load id track``
+    * ``load 5 3`` = recall track 3 parameter snapshot in slot 5
+  * ``id`` = a number 1-16
+  * ``snap`` and ``load`` have the aliases ``s`` and ``l`` for convenience
+    * ``s 1 1`` and ``l 1 1`` are valid
 
-  * save and load pset
-    * ``save_pset`` = this is the same as saving a pset in the parameters menu.
-    * ``load_pset`` = this is the same as loading a pset in the parameters menu.
+* save and load state
+  * ``save_state id``
+    * ``save_state test`` = save your current script state in a file called ``test.state``
+  * ``load_state id``
+    * ``load_state new_song`` = load ``new_song.state`` if it exists.
 
-  *nb: state includes control assignments, macros, snapshots etc... pset is the parameter values*
+* save and load pset
+  * ``save_pset`` = this is the same as saving a pset in the parameters menu.
+  * ``load_pset`` = this is the same as loading a pset in the parameters menu.
 
-  * key bindings
-    * ctrl + g = toggle gate
-    * ctrl + r = toggle record
-    * ctrl + (1-4) = track select
-    * esc = toggle info display
-      * while info display is active, left and right arrow keys navigate info pages
-        * page 1 = track parameters
-        * page 2 = reverb parameters
-        * page 2 = encoder/arc assignments
-        * page 3 = gridx/y assignments
+*nb: state includes control assignments, macros, snapshots etc... pset is the parameter values*
 
+----------
+
+* key bindings
+  * ctrl + g = toggle gate
+  * ctrl + r = toggle record
+  * ctrl + (1-4) = track select
+  * esc = toggle info display
+    * while info display is active, left and right arrow keys navigate info pages
+        
+----------
+
+## arc
+![](assets/silos-arc.png)
+
+the arc adds four extra encoders. assign controls with ``arc id track/fx control_number``
+* `` arc 1 3 4`` = assign track 3 jitter to arc ring 1
+* ``arc 4 fx 1`` = assign fx gain to arc ring 4
+
+## grid
+
+the grid has two modes of operation. mode 1 is two 8x8 **x/y** pads, mode 2 is **snapshot** mode. switch modes with ``grid_mode n`` where n = 1 or 2. more grid modes will likely be added in the future.
+
+### x/y mode
+![](assets/xy-grid.png)
+assign controls to the x/y coordinates using ``gridx`` or ``gridy``.
+
+``gridx id track/fx control_number``
+  * ``gridy 2 1 5`` = assign track 1 size to the second y coordinate (right side oof grid)
+  * ``gridx 1 fx 1`` = assign fx gain to the first x coordinate (left side of grid)
+
+### snapshot mode
+![](assets/snap-grid.png)
+in snapshot mode holding the lower dimly lit cell and pressing one of the top 3 rows will save a snapshot of your parameter settings. row 1 will save snaps for track 1, row 2 track 2, and so on. 
+a cell containing a snapshot will glow brightly. pressing a brightly lit cell will recall the associated snapshot. 
