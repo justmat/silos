@@ -46,10 +46,10 @@ a live granular instrument for norns
 launching silos lands you in a fairly minimal state. in the top right corner of your screen are indicators for gate, recording, and your current track number. at the bottom of your screen you'll find the command prompt.
 
 * key 1 = alt
-* key 2 = gate toggle
+* key 2 = gate toggle - (voice on/off)
 * key 3 = record toggle
 
-* alt + enc 2 = track select
+* alt + enc 2 = track/voice select
 * alt + enc 3 = info display navigation
 
 * alt + key 3 = info display toggle
