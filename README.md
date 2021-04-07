@@ -43,8 +43,11 @@ a live granular instrument for norns
 stuff
 
 ## arc
+![](assets/silos-arc.png)
 
-stuff
+the arc adds four extra encoders. assign controls with ``arc id track/fx control_number``
+* `` arc 1 3 4`` = assign track 3 jitter to arc ring 1
+* ``arc 4 fx 1`` = assign fx gain to arc ring 4
 
 ## grid
 
