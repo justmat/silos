@@ -1,5 +1,5 @@
 Engine_Thresher : CroneEngine {
-  classvar num_voices = 3;
+  classvar num_voices = 4;
 
   var pg;
   var <buffers;
@@ -41,14 +41,13 @@ Engine_Thresher : CroneEngine {
       arg out, effectBus, phase_out, buf,
       gate=0, pos=0, speed=1, jitter=0,
       size=0.1, density=0, density_mod_amt=0, size_mod_amt=0, pitch=1, spread=0, gain=1, envscale=1,
-      freeze=0, t_reset_pos=0, send=0;
+      freeze=0, t_reset_pos=0, send=0, cutoff=20000, rq=1;
 
       var grain_trig;
       var jitter_sig;
       var trig_rnd;
       var density_mod;
       var size_rnd;
-      var size_mod;
       var buf_dur;
       var pan_sig;
       var buf_pos;
@@ -59,9 +58,6 @@ Engine_Thresher : CroneEngine {
       trig_rnd = LFNoise0.kr(density);
       density_mod = density * (2**(trig_rnd * density_mod_amt));
       grain_trig = Impulse.kr(density_mod);
-
-      size_rnd = LFDNoise0.ar() * size_mod_amt;
-      size_mod = Clip.ar(size + size_rnd, 1.00, 500.00);
 
       buf_dur = BufDur.kr(buf);
 
@@ -85,8 +81,9 @@ Engine_Thresher : CroneEngine {
 
       pos_sig = Wrap.kr(Select.kr(freeze, [buf_pos, pos]));
 
-      sig = GrainBuf.ar(2, grain_trig, size_mod, buf, pitch, pos_sig + jitter_sig, 2, pan_sig, -1.0, 256.0);
-
+      sig = GrainBuf.ar(2, grain_trig, size, buf, pitch, pos_sig + jitter_sig, 2, Lag.kr(pan_sig, 0.2), -1.0, 256.0);
+      sig = BLowPass4.ar(sig, cutoff, rq);
+      
       level = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, timeScale: envscale);
 
       Out.ar(out, sig * level * gain);
@@ -190,11 +187,6 @@ Engine_Thresher : CroneEngine {
       voices[voice].set(\size, msg[2]);
     });
 
-    this.addCommand("size_mod_amt", "if", { arg msg;
-      var voice = msg[1] - 1;
-      voices[voice].set(\size_mod_amt, msg[2]);
-    });
-
     this.addCommand("density", "if", { arg msg;
       var voice = msg[1] - 1;
       voices[voice].set(\density, msg[2]);
@@ -224,6 +216,16 @@ Engine_Thresher : CroneEngine {
       var voice = msg[1] - 1;
       voices[voice].set(\envscale, msg[2]);
     });
+    
+    this.addCommand("cutoff", "if", { arg msg;
+		var voice = msg[1] -1;
+		voices[voice].set(\cutoff, msg[2]);
+		});
+		
+		this.addCommand("rq", "if", { arg msg;
+		var voice = msg[1] -1;
+		voices[voice].set(\rq, msg[2]);
+		});
 
     this.addCommand("send", "if", { arg msg;
     var voice = msg[1] -1;
@@ -247,3 +249,4 @@ Engine_Thresher : CroneEngine {
     effectBus.free;
   }
 }
+
