@@ -15,6 +15,9 @@ local a = arc.connect(1)
 local g = grid.connect(1)
 local alt = false
 local grid_alt = false
+
+local TRACKS = 4
+
 -- for keyboard input
 local my_string = ""
 local history = {}
@@ -26,7 +29,7 @@ local show_info = false
 local info_focus = 1
 -- controls table in the format controls[track][parameter name]
 local controls = {}
-for i = 1, 3 do
+for i = 1, TRACKS do
   controls[i] = {
     i .. "gain",
     i .. "position",
@@ -38,6 +41,8 @@ for i = 1, 3 do
     i .. "density",
     i .. "dispersal",
     i .. "spread",
+    i .. "cutoff",
+    i .. "rq",
     i .. "send"
   }
 end
@@ -73,7 +78,7 @@ silos.gridx_choices = {"1spread", "2spread"}
 silos.gridy_choices = {"1jitter", "2jitter"}
 -- for parameter snapshots
 silos.snaps = {}
-for i = 1, 3 do
+for i = 1, TRACKS do
   silos.snaps[i] = {}
   for j = 1, 16 do
     silos.snaps[i][j] = {}
@@ -82,7 +87,7 @@ end
 -- for control macros
 silos.macros = {}
 silos.muls = {}
-for i = 1, 3 do
+for i = 1, TRACKS do
   silos.macros[i] = {}
   silos.muls[i] = {}
 end
@@ -133,8 +138,8 @@ function init()
   screen.aa(0)
 
   params:add_separator()
-  for i = 1, 3 do
-    params:add_group("track " .. i, 14)
+  for i = 1, TRACKS do
+    params:add_group("track " .. i, 16)
 
     params:add_number(i .. "gate", i .. " gate", 0, 1, 0)
     params:set_action(i .. "gate", function(value) engine.gate(i, value) end)
@@ -142,7 +147,7 @@ function init()
     params:add_number(i .. "record", i .. " record", 0, 1, 0)
     params:set_action(i .. "record", function(value) engine.record(i, value) end)
 
-    params:add_taper(i .. "gain", i .. " gain", -60, 20, -12, 0, "dB")
+    params:add_taper(i .. "gain", i .. " gain", -60, 20, -16, 0, "dB")
     params:set_action(i .. "gain", function(value) engine.gain(i, math.pow(10, value / 20)) end)
 
     params:add_taper(i .. "position", i .. " position", 0, 1, 0.001, 0)
@@ -157,12 +162,9 @@ function init()
     params:add_taper(i .. "size", i .. " size", 1, 500, 150, 5, "ms")
     params:set_action(i .. "size", function(value) engine.size(i, value / 1000) end)
 
-    params:add_taper(i .. "flux", i .. " flux", 0, 1, 0, 0, "")
-    params:set_action(i .. "flux", function(value) engine.size_mod_amt(i, value) end)
-
-    params:add_taper(i .. "density", i .. " density", 0, 512, 32, 6, "hz")
+    params:add_taper(i .. "density", i .. " density", 0, 256, 32, 6, "hz")
     params:set_action(i .. "density", function(value) engine.density(i, value) end)
-
+    
     params:add_control(i.."dispersal", i.." dispersal", controlspec.new(0.00, 1.00, "lin", 0, 0))
     params:set_action(i.."dispersal", function(v) engine.density_mod_amt(i, v) end)
 
@@ -172,23 +174,32 @@ function init()
     params:add_taper(i .. "spread", i .. " spread", 0, 100, 35, 0, "%")
     params:set_action(i .. "spread", function(value) engine.spread(i, value / 100) end)
 
+    params:add_control(i .. "cutoff", i .. " cutoff", controlspec.new(20, 18000, "exp", 0, 18000, "hz"))
+    params:set_action(i .. "cutoff", function(value) engine.cutoff(i, value) end)
+    
+    params:add_control(i .. "rq", i .. " rq", controlspec.new(0.00, 1.00, "lin", 0.1, 1))
+    params:set_action(i .. "rq", function(value) engine.rq(i, value) end)
+
     params:add_control(i .. "fdbk", i .." fdbk", controlspec.new(0.0, 1.0, "lin", 0.01, 0))
     params:set_action(i .. "fdbk", function(value) engine.pre_level(i, value) end)
-
+    
     params:add_control(i .. "send", i .." send", controlspec.new(0.0, 1.0, "lin", 0.01, 0))
     params:set_action(i .. "send", function(value) engine.send(i, value) end)
+    
+    params:add_control(i .."fade_time", i .. " gate fade time", controlspec.new(0, 15, "lin", 0.1, 0, "secs"))
+    params:set_action(i .. "fade_time", function(value) engine.envscale(i, value) end)
   end
-
+  
   params:add_separator()
    params:add_group("fx", 13)
   -- effect controls
   -- delay time
-  params:add_taper("time", "*" .. "time", 0.0, 60.0, 60, 0, "")
+  params:add_taper("time", "*" .. "time", 0.0, 60.0, 8, 0, "")
   params:set_action("time", function(value) engine.time(value) end)
   -- delay size
   params:add_taper("verbsize", "*" .. "size", 0.5, 5.0, 1.67, 0, "")
   params:set_action("verbsize", function(value) engine.verbsize(value) end)
-  -- dampening
+  -- dampening 
   params:add_taper("damp", "*" .. "damp", 0.0, 1.0, 0.3144, 0, "")
   params:set_action("damp", function(value) engine.damp(value) end)
   -- diffusion
@@ -203,16 +214,16 @@ function init()
   -- reverb eq
   params:add_taper("lowx", "*" .. "lowx", 0.0, 1.0, 0.8, 0, "")
   params:set_action("lowx", function(value) engine.low(value) end)
-
+  
   params:add_taper("midx", "*" .. "midx", 0.0, 1.0, 0.70, 0, "")
   params:set_action("midx", function(value) engine.mid(value) end)
-
+  
   params:add_taper("highx", "*" .. "highx", 0.0, 1.0, 0.3, 0, "")
   params:set_action("highx", function(value) engine.high(value) end)
-
+  
   params:add_taper("lowcross", "*" .. "low crossover", 100, 6000.0, 2450.0, 0, "")
   params:set_action("lowcross", function(value) engine.lowcut(value) end)
-
+  
   params:add_taper("highcross", "*" .. "high crossover", 1000.0, 10000.0, 1024.0, 0, "")
   params:set_action("highcross", function(value) engine.highcut(value) end)
   -- bit depth
@@ -222,7 +233,7 @@ function init()
   params:add_taper("fx_gain", "*" .. "gain", 0.0, 1.0, 0.50, 0, "")
   params:set_action("fx_gain", function(value) engine.fxgain(value) end)
 
-  params:add_separator()
+  params:add_separator('config')
 
   params:add_option("grid_mode", "grid mode", silos.grid_modes, 1)
   params:set_action("grid_mode", function(value) silos.grid_mode = value end)
@@ -274,7 +285,7 @@ end
 function enc(n, d)
   if alt  then
     if n == 2 then
-      track = util.clamp(track + d, 1, 3)
+      track = util.clamp(track + d, 1, TRACKS)
     elseif n == 3 then
       info_focus = util.clamp(info_focus + d, 1, 5)
     end
@@ -290,29 +301,51 @@ end
 
 -- screen ----------
 
-local function draw_engine_params()
-  screen.move(1, 10)
-  screen.text(1 .. " gain " .. string.format("%.1f", params:get(track .."gain")))
+local function draw_engine_params1()
+  screen.move(54, 10)
+  screen.text_center("-engine-")
+  --screen.move(1, 10)
   screen.move(1, 18)
-  screen.text(2 .. " position " .. string.format("%.1f", params:get(track .. "position")))
+  screen.text(1 .. " gain " .. string.format("%.1f", params:get(track .."gain")))
+  --screen.move(1, 18)
   screen.move(1, 26)
-  screen.text(3 .. " speed " .. string.format("%.1f", params:get(track .. "speed")))
+  screen.text(2 .. " position " .. string.format("%.1f", params:get(track .. "position")))
+  --screen.move(1, 26)
   screen.move(1, 34)
-  screen.text(4 .. " jitter " .. string.format("%.1f", params:get(track .. "jitter")))
+  screen.text(3 .. " speed " .. string.format("%.1f", params:get(track .. "speed")))
+  --screen.move(1, 34)
   screen.move(1, 42)
-  screen.text(5 .. " size " .. string.format("%.1f", params:get(track .. "size")))
+  screen.text(4 .. " jitter " .. string.format("%.1f", params:get(track .. "jitter")))
+  --screen.move(1, 42)
   screen.move(1, 50)
-  screen.text(6 .. " pitch " .. string.format("%.1f", params:get(track .. "pitch")))
+  screen.text(5 .. " size " .. string.format("%.1f", params:get(track .. "size")))
+  --screen.move(1, 50)
   screen.move(65, 18)
-  screen.text(7 .. " fdbk " .. string.format("%.1f", params:get(track .. "fdbk")))
+  screen.text(6 .. " pitch " .. string.format("%.1f", params:get(track .. "pitch")))
+  --screen.move(65, 18)
   screen.move(65, 26)
-  screen.text(8 .. " density " .. string.format("%.1f", params:get(track .. "density")))
+  screen.text(7 .. " fdbk " .. string.format("%.1f", params:get(track .. "fdbk")))
+  --screen.move(65, 26)
   screen.move(65, 34)
-  screen.text(9 .. " dispersal "..string.format("%.1f", params:get(track .. "dispersal")))
+  screen.text(8 .. " density " .. string.format("%.1f", params:get(track .. "density")))
+  --screen.move(65, 34)
   screen.move(65, 42)
-  screen.text(10 .. " spread " .. string.format("%.1f", params:get(track .. "spread")))
+  screen.text(9 .. " dispersal "..string.format("%.1f", params:get(track .. "dispersal")))
+  --screen.move(65, 42)
   screen.move(65, 50)
-  screen.text(11 .. " send " .. string.format("%.1f", params:get(track .. "send")))
+  screen.text(10 .. " spread " .. string.format("%.1f", params:get(track .. "spread")))
+end
+
+
+local function draw_engine_params2()
+  screen.move(54, 10)
+  screen.text_center("-engine-")
+  screen.move(1, 18)
+  screen.text("11 cutoff " .. string.format("%.1f", params:get(track .. "cutoff")))
+  screen.move(1, 26)
+  screen.text("12 rq " .. string.format("%.1f", params:get(track .. "rq")))
+  screen.move(1, 34)
+  screen.text("13 send " .. string.format("%.1f", params:get(track .. "send")))
 end
 
 
@@ -430,14 +463,16 @@ function redraw()
       screen.font_size(6)
       screen.level(8)
       if info_focus == 1 then
-        draw_engine_params()
+        draw_engine_params1()
       elseif info_focus == 2 then
-        draw_fx_params()
+        draw_engine_params2()
       elseif info_focus == 3 then
-        draw_controls1()
+        draw_fx_params()
       elseif info_focus == 4 then
-        draw_controls2()
+        draw_controls1()
       elseif info_focus == 5 then
+        draw_controls2()
+      elseif info_focus == 6 then
         draw_snaps()
       end
     end
@@ -532,22 +567,22 @@ function g.redraw()
   if silos.grid_mode == 1 then
     local gxh, gxl = params:get_range(silos.gridx_choices[1])[1], params:get_range(silos.gridx_choices[1])[2]
     local gyh, gyl = params:get_range(silos.gridy_choices[1])[1], params:get_range(silos.gridy_choices[1])[2]
-
+  
     local x_scaled = util.linlin(gxh, gxl, 1, 8, params:get(silos.gridx_choices[1]))
     local y_scaled = util.linlin(gyh, gyl, 1, 8, params:get(silos.gridy_choices[1]))
 
     gxh, gxl = params:get_range(silos.gridx_choices[2])[1], params:get_range(silos.gridx_choices[2])[2]
     gyh, gyl = params:get_range(silos.gridy_choices[2])[1], params:get_range(silos.gridy_choices[2])[2]
-
+  
     local x_scaled2 = util.linlin(gxh, gxl, 9, 16, params:get(silos.gridx_choices[2]))
     local y_scaled2 = util.linlin(gyh, gyl, 1, 8, params:get(silos.gridy_choices[2]))
 
-
+  
     x_scaled = math.floor(x_scaled + 0.5)
     y_scaled = math.floor(y_scaled + 0.5)
     x_scaled2 = math.floor(x_scaled2 + 0.5)
     y_scaled2 = math.floor(y_scaled2 + 0.5)
-
+    
     for i = 1, 8 do
       g:led(i, y_scaled, 2)
       g:led(x_scaled, i, 2)
@@ -558,7 +593,7 @@ function g.redraw()
     g:led(x_scaled, y_scaled, 10)
     g:led(x_scaled2, y_scaled2, 10)
   elseif silos.grid_mode == 2 then
-    for i = 1, 3 do
+    for i = 1, TRACKS do
       for j = 1, 16 do
         g:led(j, i, #silos.snaps[i][j] > 0 and 10 or 2 )
       end
@@ -617,7 +652,7 @@ function keyboard.code(code,value)
       my_string = my_string:sub(1, -2)
     elseif code == "UP" then
       -- make sure there's a history
-      if #history > 0 then
+      if #history > 0 then 
         -- reset the history index after pressing enter
         if new_line then
           history_index = #history
@@ -632,7 +667,7 @@ function keyboard.code(code,value)
       -- make sure there is a history, and we are accessing it
       if #history > 0 and history_index ~= nil then
         -- increment history_index
-        history_index = util.clamp(history_index + 1, 1, #history)
+        history_index = util.clamp(history_index + 1, 1, #history) 
         my_string = history[history_index]
       end
     elseif code == "RIGHT" then
@@ -707,13 +742,13 @@ function keyboard.code(code,value)
         silos.grid_mode = tonumber(command[2])
       -- set all gates
       elseif command[1] == "g" or command[1] == "gate" then
-        for i = 1, 4 do
+        for i = 1, TRACKS do
           local state = tonumber(command[i + 1])
           params:set(i .. "gate", state)
         end
       -- set all records
       elseif command[1] == "r" or command[1] == "record" then
-        for i = 1, 4 do
+        for i = 1, TRACKS do
           local state = tonumber(command[i + 1])
           params:set(i .. "record", state)
         end
@@ -742,12 +777,12 @@ function keyboard.code(code,value)
           local control, mul = tonumber(command[4]), tonumber(command[5])
           table.insert(silos.macros[id], fx_controls[control])
           table.insert(silos.muls[id], mul)
-        else
+        else  
           local track, control, mul = tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
           table.insert(silos.macros[id], controls[track][control])
           table.insert(silos.muls[id], mul)
         end
-      -- state/pset persistence
+      -- state/pset persistence 
       elseif command[1] == "save_state" then
         save_state(command[2])
       elseif command[1] == "load_state" then
@@ -757,7 +792,7 @@ function keyboard.code(code,value)
       elseif command[1] == "load_pset" then
         load_pset()
       -- set single parameters
-      elseif tabutil.contains(controls[track], command[2] .. command[1]) then
+      elseif tabutil.contains(controls[tonumber(command[2])], command[2] .. command[1]) then
         local v = tonumber(command[3])
         params:set(command[2] .. command[1], v)
       elseif command[1] == "fx" then
@@ -767,7 +802,7 @@ function keyboard.code(code,value)
       -- append the command to history
       table.insert(history, my_string)
       -- clear my_string
-      my_string = ""
+      my_string = "" 
       new_line = true
     end
     is_dirty = true
