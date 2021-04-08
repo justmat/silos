@@ -59,7 +59,8 @@ if you'd like to see a bit more information, press **alt + key 3** or **ESC** on
 use **alt + enc 3** or your **LEFT/RIGHT** arrow keys to navigate.
 
 ### engine parameters
-![](assets/silos-info-m.png)
+![](assets/silos-engine1-m.png)
+![](assets/silos-engine2-m.png)
 
 ### fx
 ![](assets/silos-fx-m.png)
