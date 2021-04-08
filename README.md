@@ -17,6 +17,8 @@ a live granular instrument for norns
 * density = frequency of grains (0 - 512hz)
 * dispersal = density modulation (0 - 1)
 * spread = pan position modulation (0 - 100)
+* * cutoff = frequency cutoff of low-pass filter (20 - 18000)
+* rq = reciprical of q/resonance (0 - 1) *0 is full resonance, 1 is no resonance*
 * fx send = send amount (0 - 1)
 
 *nb: speed and pitch both work as rate controls. 2 is twice as fast/1 octave up*
