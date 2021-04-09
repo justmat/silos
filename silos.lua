@@ -185,9 +185,6 @@ function init()
 
     params:add_control(i .. "send", i .." send", controlspec.new(0.0, 1.0, "lin", 0.01, 0))
     params:set_action(i .. "send", function(value) engine.send(i, value) end)
-
-    params:add_control(i .."fade_time", i .. " gate fade time", controlspec.new(0, 15, "lin", 0.1, 0, "secs"))
-    params:set_action(i .. "fade_time", function(value) engine.envscale(i, value) end)
   end
 
   params:add_separator()
@@ -237,6 +234,11 @@ function init()
 
   params:add_option("grid_mode", "grid mode", silos.grid_modes, 1)
   params:set_action("grid_mode", function(value) silos.grid_mode = value end)
+
+  for i = 1, 4 do
+    params:add_control(i .."fade_time", i .. " gate fade time", controlspec.new(0, 15, "lin", 0.1, 0, "secs"))
+    params:set_action(i .. "fade_time", function(value) engine.envscale(i, value) end)
+  end
 
   params:bang()
 

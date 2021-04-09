@@ -22,7 +22,7 @@ a live granular instrument for norns
 * fx send = send amount (0 - 1)
 * gate fade time = the duration of fade in/out time when toggling gate, in seconds (0 - 30secs)
 
-*nb: speed and pitch both work as rate controls. 2 is twice as fast/1 octave up*
+*nb: speed and pitch both work as rate controls. 2 is twice as fast/1 octave up. gate fade time can be set in the parameter menu under the config section*
 
 #### there is also an fx bus that features a lush modulated reverb followed by a bit crusher. the fx parameters are:
 
