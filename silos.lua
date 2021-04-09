@@ -442,7 +442,7 @@ local function draw_snaps()
   -- dim for unused, bright for contains data
   screen.move(64, 10)
   screen.text_center("-snapshots-")
-  for i = 1, 3 do
+  for i = 1, TRACKS do
     for j = 1, 16 do
       screen.level(#silos.snaps[i][j] > 0 and 10 or 2 )
       screen.rect(0.5 + j * 8, 10 + i * 8, 4, 4)
