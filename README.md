@@ -71,6 +71,7 @@ use **alt + enc 3** or your **LEFT/RIGHT** arrow keys to navigate.
 ### control assignments
 ![](assets/silos-ctrls-m.png)
 ![](assets/silos-ctrls2-m.png)
+![](assets/silos-ctrls3-m.png)
 
 ### snapshots
 ![](assets/silos-snaps-m.png)
