@@ -139,7 +139,7 @@ function init()
 
   params:add_separator()
   for i = 1, TRACKS do
-    params:add_group("track " .. i, 16)
+    params:add_group("track " .. i, 15)
 
     params:add_number(i .. "gate", i .. " gate", 0, 1, 0)
     params:set_action(i .. "gate", function(value) engine.gate(i, value) end)
