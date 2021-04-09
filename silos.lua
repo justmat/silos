@@ -164,7 +164,7 @@ function init()
 
     params:add_taper(i .. "density", i .. " density", 0, 256, 32, 6, "hz")
     params:set_action(i .. "density", function(value) engine.density(i, value) end)
-    
+
     params:add_control(i.."dispersal", i.." dispersal", controlspec.new(0.00, 1.00, "lin", 0, 0))
     params:set_action(i.."dispersal", function(v) engine.density_mod_amt(i, v) end)
 
@@ -176,20 +176,20 @@ function init()
 
     params:add_control(i .. "cutoff", i .. " cutoff", controlspec.new(20, 18000, "exp", 0, 18000, "hz"))
     params:set_action(i .. "cutoff", function(value) engine.cutoff(i, value) end)
-    
+
     params:add_control(i .. "rq", i .. " rq", controlspec.new(0.00, 1.00, "lin", 0.1, 1))
     params:set_action(i .. "rq", function(value) engine.rq(i, value) end)
 
     params:add_control(i .. "fdbk", i .." fdbk", controlspec.new(0.0, 1.0, "lin", 0.01, 0))
     params:set_action(i .. "fdbk", function(value) engine.pre_level(i, value) end)
-    
+
     params:add_control(i .. "send", i .." send", controlspec.new(0.0, 1.0, "lin", 0.01, 0))
     params:set_action(i .. "send", function(value) engine.send(i, value) end)
-    
+
     params:add_control(i .."fade_time", i .. " gate fade time", controlspec.new(0, 15, "lin", 0.1, 0, "secs"))
     params:set_action(i .. "fade_time", function(value) engine.envscale(i, value) end)
   end
-  
+
   params:add_separator()
    params:add_group("fx", 13)
   -- effect controls
@@ -199,7 +199,7 @@ function init()
   -- delay size
   params:add_taper("verbsize", "*" .. "size", 0.5, 5.0, 1.67, 0, "")
   params:set_action("verbsize", function(value) engine.verbsize(value) end)
-  -- dampening 
+  -- dampening
   params:add_taper("damp", "*" .. "damp", 0.0, 1.0, 0.3144, 0, "")
   params:set_action("damp", function(value) engine.damp(value) end)
   -- diffusion
@@ -214,16 +214,16 @@ function init()
   -- reverb eq
   params:add_taper("lowx", "*" .. "lowx", 0.0, 1.0, 0.8, 0, "")
   params:set_action("lowx", function(value) engine.low(value) end)
-  
+
   params:add_taper("midx", "*" .. "midx", 0.0, 1.0, 0.70, 0, "")
   params:set_action("midx", function(value) engine.mid(value) end)
-  
+
   params:add_taper("highx", "*" .. "highx", 0.0, 1.0, 0.3, 0, "")
   params:set_action("highx", function(value) engine.high(value) end)
-  
+
   params:add_taper("lowcross", "*" .. "low crossover", 100, 6000.0, 2450.0, 0, "")
   params:set_action("lowcross", function(value) engine.lowcut(value) end)
-  
+
   params:add_taper("highcross", "*" .. "high crossover", 1000.0, 10000.0, 1024.0, 0, "")
   params:set_action("highcross", function(value) engine.highcut(value) end)
   -- bit depth
@@ -382,7 +382,7 @@ local function draw_controls1()
   screen.text(silos.enc_choices[3])
   screen.move(94, 40)
   screen.text_right(params:get(silos.enc_choices[3]))
-  
+
 end
 
 
@@ -592,22 +592,22 @@ function g.redraw()
   if silos.grid_mode == 1 then
     local gxh, gxl = params:get_range(silos.gridx_choices[1])[1], params:get_range(silos.gridx_choices[1])[2]
     local gyh, gyl = params:get_range(silos.gridy_choices[1])[1], params:get_range(silos.gridy_choices[1])[2]
-  
+
     local x_scaled = util.linlin(gxh, gxl, 1, 8, params:get(silos.gridx_choices[1]))
     local y_scaled = util.linlin(gyh, gyl, 1, 8, params:get(silos.gridy_choices[1]))
 
     gxh, gxl = params:get_range(silos.gridx_choices[2])[1], params:get_range(silos.gridx_choices[2])[2]
     gyh, gyl = params:get_range(silos.gridy_choices[2])[1], params:get_range(silos.gridy_choices[2])[2]
-  
+
     local x_scaled2 = util.linlin(gxh, gxl, 9, 16, params:get(silos.gridx_choices[2]))
     local y_scaled2 = util.linlin(gyh, gyl, 1, 8, params:get(silos.gridy_choices[2]))
 
-  
+
     x_scaled = math.floor(x_scaled + 0.5)
     y_scaled = math.floor(y_scaled + 0.5)
     x_scaled2 = math.floor(x_scaled2 + 0.5)
     y_scaled2 = math.floor(y_scaled2 + 0.5)
-    
+
     for i = 1, 8 do
       g:led(i, y_scaled, 2)
       g:led(x_scaled, i, 2)
@@ -677,7 +677,7 @@ function keyboard.code(code,value)
       my_string = my_string:sub(1, -2)
     elseif code == "UP" then
       -- make sure there's a history
-      if #history > 0 then 
+      if #history > 0 then
         -- reset the history index after pressing enter
         if new_line then
           history_index = #history
@@ -692,7 +692,7 @@ function keyboard.code(code,value)
       -- make sure there is a history, and we are accessing it
       if #history > 0 and history_index ~= nil then
         -- increment history_index
-        history_index = util.clamp(history_index + 1, 1, #history) 
+        history_index = util.clamp(history_index + 1, 1, #history)
         my_string = history[history_index]
       end
     elseif code == "RIGHT" then
@@ -802,12 +802,12 @@ function keyboard.code(code,value)
           local control, mul = tonumber(command[4]), tonumber(command[5])
           table.insert(silos.macros[id], fx_controls[control])
           table.insert(silos.muls[id], mul)
-        else  
+        else
           local track, control, mul = tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
           table.insert(silos.macros[id], controls[track][control])
           table.insert(silos.muls[id], mul)
         end
-      -- state/pset persistence 
+      -- state/pset persistence
       elseif command[1] == "save_state" then
         save_state(command[2])
       elseif command[1] == "load_state" then
@@ -827,7 +827,7 @@ function keyboard.code(code,value)
       -- append the command to history
       table.insert(history, my_string)
       -- clear my_string
-      my_string = "" 
+      my_string = ""
       new_line = true
     end
     is_dirty = true
