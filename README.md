@@ -20,7 +20,7 @@ a live granular instrument for norns
 * cutoff = frequency cutoff of low-pass filter (20 - 18000hz)
 * rq = reciprical of q/resonance (0 - 1) *0 is full resonance, 1 is no resonance*
 * fx send = send amount (0 - 1)
-* gate fade time = the duration of fade in/out time when toggling gate, in seconds (0 - 30secs)
+* fade time = the duration of fade in/out time when toggling gate, in seconds (0 - 30secs)
 
 *nb: speed and pitch both work as rate controls. 2 is twice as fast/1 octave up. gate fade time can be set in the parameter menu under the config section*
 
