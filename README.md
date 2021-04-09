@@ -22,9 +22,10 @@ a live granular instrument for norns
 * fx send = send amount (0 - 1)
 * fade time = the duration of fade in/out time when toggling gate, in seconds (0 - 30secs)
 
-*nb: speed and pitch both work as rate controls. 2 is twice as fast/1 octave up. gate fade time can be set in the parameter menu under the config section*
+*nb: pitch works like a rate control. 2 = 1 octave up, 4 = 2 octave up, 0.5 = 1 octave down*
 
-#### there is also an fx bus that features a lush modulated reverb followed by a bit crusher. the fx parameters are:
+
+#### in addition to the granulation, thresher also includes an fx bus featuring a lush modulated reverb followed by a bit crusher. the fx parameters are:
 
 * gain = fx output level (0 - 1)
 * time = t60/ the time it takes for the sound to decay by -60db (0 - 60)
