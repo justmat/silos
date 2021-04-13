@@ -13,6 +13,8 @@ local tabutil = require 'tabutil'
 
 local a = arc.connect(1)
 local g = grid.connect(1)
+local m = midi.connect(1)
+
 local alt = false
 local grid_alt = false
 
@@ -240,6 +242,8 @@ function init()
   end
 
   params:bang()
+
+  m.event = function(v) is_dirty = true end
 
   -- arc redraw metro
   local arc_redraw_timer = metro.init()
@@ -834,3 +838,4 @@ function keyboard.code(code,value)
     is_dirty = true
   end
 end
+
