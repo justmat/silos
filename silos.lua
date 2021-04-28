@@ -30,7 +30,7 @@ local track = 1
 local show_info = false
 local info_focus = 1
 -- controls table in the format controls[track][parameter name]
-local controls = {}
+controls = {}
 for i = 1, TRACKS do
   controls[i] = {
     i .. "gain",
@@ -49,7 +49,7 @@ for i = 1, TRACKS do
   }
 end
 
-local fx_controls = {
+fx_controls = {
   "fx_gain",
   "time",
   "verbsize",
@@ -821,13 +821,14 @@ function keyboard.code(code,value)
         save_pset()
       elseif command[1] == "load_pset" then
         load_pset()
+      elseif command[2] == "fx" then
+        local c, v = command[1], tonumber(command[3])
+        if c == "gain" then c = "fx_" .. c end
+        params:set(c, v)
       -- set single parameters
       elseif tabutil.contains(controls[tonumber(command[2])], command[2] .. command[1]) then
         local v = tonumber(command[3])
         params:set(command[2] .. command[1], v)
-      elseif command[1] == "fx" then
-        local c, v = tonumber(command[2]), tonumber(command[3])
-        params:set(fx_controls[c], v)
       end
       -- append the command to history
       table.insert(history, my_string)
