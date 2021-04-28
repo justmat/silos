@@ -195,7 +195,7 @@ function init()
   params:add_taper("time", "*" .. "time", 0.0, 60.0, 8, 0, "")
   params:set_action("time", function(value) engine.time(value) end)
   -- delay size
-  params:add_taper("verbsize", "*" .. "size", 0.5, 5.0, 1.67, 0, "")
+  params:add_taper("verbsize", "*" .. "size", 1, 5.0, 1.67, 0.01, "")
   params:set_action("verbsize", function(value) engine.verbsize(value) end)
   -- dampening
   params:add_taper("damp", "*" .. "damp", 0.0, 1.0, 0.3144, 0, "")
@@ -714,17 +714,33 @@ function keyboard.code(code,value)
       local command = split_string(my_string)
       -- rand
       if command[1] == "rand" then
-        local track, control = tonumber(command[2]), tonumber(command[3])
-        local p = controls[track][control]
-        local low, high = tonumber(params:get_range(p)[1]), tonumber(params:get_range(p)[2])
-        local n = math.random(low, high)
-        params:set(p, n)
+        if command[2] == "fx" then
+          local control = tonumber(command[3])
+          local p = fx_controls[control]
+          local low, high = tonumber(params:get_range(p)[1]), tonumber(params:get_range(p)[2])
+          local n = util.linlin(0, 1, low, high, math.random())
+          params:set(p, n)
+        else
+          local track, control = tonumber(command[2]), tonumber(command[3])
+          local p = controls[track][control]
+          local low, high = tonumber(params:get_range(p)[1]), tonumber(params:get_range(p)[2])
+          local n = util.linlin(0, 1, low, high, math.random())
+          params:set(p, n)
+        end
       -- rrand
       elseif command[1] == "rrand" then
-        local track, control, low, high = tonumber(command[2]), tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
-        local p = controls[track][control]
-        local n = math.random(low, high)
-        params:set(p, n)
+        local low, high = tonumber(command[4]), tonumber(command[5])
+        if command[2] == "fx" then
+          local control = tonumber(command[3])
+          local p = fx_controls[control]
+          local n = util.linlin(0, 1, low, high, math.random())
+          params:set(p, n)
+        else
+          local track, control = tonumber(command[2]), tonumber(command[3])
+          local p = controls[track][control]
+          local n = util.linlin(0, 1, low, high, math.random())
+          params:set(p, n)
+        end
       -- assign controls
       -- enc
       elseif command[1] == "enc" then
