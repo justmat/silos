@@ -714,15 +714,17 @@ function keyboard.code(code,value)
       local command = split_string(my_string)
       -- rand
       if command[1] == "rand" then
-        local track, control, p = tonumber(command[2]), tonumber(command[3]), controls[track][control]
+        local track, control = tonumber(command[2]), tonumber(command[3])
+        local p = controls[track][control]
         local low, high = tonumber(params:get_range(p)[1]), tonumber(params:get_range(p)[2])
         local n = math.random(low, high)
-        params:set(controls[track][control], n)
+        params:set(p, n)
       -- rrand
       elseif command[1] == "rrand" then
-        local low, high, track, control = tonumber(command[2]), tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
+        local track, control, low, high = tonumber(command[2]), tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
+        local p = controls[track][control]
         local n = math.random(low, high)
-        params:set(controls[track][control], n)
+        params:set(p, n)
       -- assign controls
       -- enc
       elseif command[1] == "enc" then
