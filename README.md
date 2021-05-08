@@ -104,9 +104,9 @@ assign controls to the x/y coordinates using ``gridx`` or ``gridy``.
 in snapshot mode, holding the lower dimly lit cell and pressing one of the top 3 rows will save a snapshot of your parameter settings. row 1 will save snaps for track 1, row 2 track 2, and so on. 
 a cell containing a snapshot will glow brightly. pressing a brightly lit cell will recall the associated snapshot. 
 
-## MIDI
+## midi
 
-assign controls to MIDI CC messages directly from silos using ``midi midi_device midi_track midi_cc track/fx control_number``. this creates normal norns pmaps, and you will find them in the usual PARAMETERS > MAP menu.
+assign controls to midi cc messages directly from silos using ``midi midi_device midi_channel midi_cc track/fx control_number``. this creates normal norns pmaps, and you will find them in the usual parameters > map menu on norns.
 
   * ``midi 1 14 4 1 8`` = assign track 1 density to 1st midi device channel 14 knob 4
   * ``midi 2 10 3 fx 6`` = assign fx mod depth to 2nd midi device channel 10 knob 3
