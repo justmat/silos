@@ -78,6 +78,7 @@ silos.enc_choices = {"1gain", "1position", "1speed"}
 silos.arc_choices = {"1jitter", "1spread", "1density", "1pitch"}
 silos.gridx_choices = {"1spread", "2spread"}
 silos.gridy_choices = {"1jitter", "2jitter"}
+silos.midi_choices = {}
 -- for parameter snapshots
 silos.snaps = {}
 for i = 1, TRACKS do
@@ -764,6 +765,29 @@ function keyboard.code(code,value)
         else
           local track, control = tonumber(command[3]), tonumber(command[4])
           silos.arc_choices[id] = controls[track][control]
+        end
+      -- MIDI
+      elseif command[1] == "midi" then
+        -- syntax: midi midi_device midi_channel midi_cc track control_number
+        tab.print(norns.pmap.data)
+        tab.print(command)
+        local id = command[2]..":"..command[3]..":"..command[4]
+        local midi_device = tonumber(command[2])
+        local midi_channel = tonumber(command[3])
+        local midi_cc = tonumber(command[4])
+        -- TODO deal with macro here
+        if command[5] == "fx" then
+          local control = tonumber(command[6])
+          silos.midi_choices[id] = fx_controls[control]
+          norns.pmap.remove(fx_controls[control])
+          norns.pmap.new(fx_controls[control])
+          norns.pmap.assign(fx_controls[control], midi_device, midi_channel, midi_cc)
+        else
+          local track, control = tonumber(command[5]), tonumber(command[6])
+          silos.midi_choices[id] = controls[track][control]
+          norns.pmap.remove(controls[track][control])
+          norns.pmap.new(controls[track][control])
+          norns.pmap.assign(controls[track][control], midi_device, midi_channel, midi_cc)
         end
       -- gridx
       elseif command[1] == "gridx" then
