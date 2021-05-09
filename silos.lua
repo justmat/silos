@@ -703,11 +703,11 @@ function keyboard.code(code,value)
       end
     elseif code == "RIGHT" then
       if show_info then
-        info_focus = util.clamp(info_focus + 1, 1, 5)
+        info_focus = util.clamp(info_focus + 1, 1, 7)
       end
     elseif code == "LEFT" then
       if show_info then
-        info_focus = util.clamp(info_focus - 1, 1, 5)
+        info_focus = util.clamp(info_focus - 1, 1, 7)
       end
     elseif code == "ENTER" then
       -- parse string for commands
