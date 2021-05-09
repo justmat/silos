@@ -767,10 +767,9 @@ function keyboard.code(code,value)
           silos.arc_choices[id] = controls[track][control]
         end
       -- MIDI
-      elseif command[1] == "midi" then
-        -- syntax: midi midi_device midi_channel midi_cc track control_number
-        tab.print(norns.pmap.data)
-        tab.print(command)
+      -- assign CC's
+      elseif command[1] == "cc" then
+        -- syntax: cc midi_device midi_channel cc_number track/fx control_number
         local id = command[2]..":"..command[3]..":"..command[4]
         local midi_device = tonumber(command[2])
         local midi_channel = tonumber(command[3])

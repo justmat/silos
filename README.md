@@ -104,13 +104,6 @@ assign controls to the x/y coordinates using ``gridx`` or ``gridy``.
 in snapshot mode, holding the lower dimly lit cell and pressing one of the top 3 rows will save a snapshot of your parameter settings. row 1 will save snaps for track 1, row 2 track 2, and so on. 
 a cell containing a snapshot will glow brightly. pressing a brightly lit cell will recall the associated snapshot. 
 
-## midi
-
-assign controls to midi cc messages directly from silos using ``midi midi_device midi_channel midi_cc track/fx control_number``. this creates normal norns pmaps, and you will find them in the usual parameters > map menu on norns.
-
-  * ``midi 1 14 4 1 8`` = assign track 1 density to 1st midi device channel 14 knob 4
-  * ``midi 2 10 3 fx 6`` = assign fx mod depth to 2nd midi device channel 10 knob 3
-
 ## the command prompt
 
 there are several commands to configure controls, set parameter values, and save/load various sets of data.
@@ -118,17 +111,18 @@ there are several commands to configure controls, set parameter values, and save
 ### Assign controls:
   * engine: ``controller id track control_number``
   * fx: ``controller id "fx" fx_control_number``
+  * midi cc: ``cc midi_device midi_chan cc_number track/fx control_number``
     * valid ``controller``s are:
       * enc
       * arc
       * gridx
       * gridy
-      * midi
+      * cc
     * valid ``id``s are:
       * enc = 1 - 3
       * arc = 1 - 4
       * gridx/gridy = 1 - 2
-      * midi = 1 - 4 1 - 16 1 - 127 for device, channel and knob
+      * cc = 1 - 4, 1 - 16, 1 - 127. for device, channel and knob
     * engine ``control_number``s are:
       * 1 = gain
       * 2 = position
@@ -156,7 +150,7 @@ there are several commands to configure controls, set parameter values, and save
   * for example:
     * ``enc 3 1 6`` = set encoder 3 to track 1 density control
     * ``arc 2 fx 6`` = set arc ring 2 to fx mod_depth
-    * ``midi 1 14 4 1 8`` = assign track 1 density to 1st midi device channel 14 knob 4
+    * ``cc 1 14 4 1 8`` = assign track 1 density to 1st midi device channel 14 cc 4
 
     *nb: control lists can be viewed in app by toggling info display*
 
