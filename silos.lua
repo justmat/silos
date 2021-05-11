@@ -156,8 +156,8 @@ function init()
     params:add_taper(i .. "position", i .. " position", 0, 1, 0.001, 0)
     params:set_action(i .. "position", function(value)  engine.seek(i, value) end)
 
-    params:add_taper(i .. "speed", i .. " speed", -300, 300, 0, 0, "%")
-    params:set_action(i .. "speed", function(value) engine.speed(i, value / 100) end)
+    params:add_taper(i .. "speed", i .. " speed", -4, 4, 0, 0, "")
+    params:set_action(i .. "speed", function(value) engine.speed(i, value) end)
 
     params:add_taper(i .. "jitter", i .. " jitter", 0, 500, 0, 5, "ms")
     params:set_action(i .. "jitter", function(value) engine.jitter(i, value / 1000) end)
