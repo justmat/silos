@@ -4,7 +4,7 @@ a live granular instrument for norns
 
 ----------
 
-#### silos granular engine, thresher, contains 3 tracks, each with its own 8 second buffer. the parameters for controlling the engine are:
+#### silos granular engine, thresher, contains 4 tracks, each with its own 8 second buffer. the parameters for controlling the engine are:
 
 * gain = output level for the voice (0 - 1)
 * position = position within the buffer (0 - 1)
