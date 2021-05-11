@@ -111,18 +111,15 @@ there are several commands to configure controls, set parameter values, and save
 ### Assign controls:
   * engine: ``controller id track control_number``
   * fx: ``controller id "fx" fx_control_number``
-  * midi cc: ``cc midi_device midi_chan cc_number track/fx control_number``
     * valid ``controller``s are:
       * enc
       * arc
       * gridx
       * gridy
-      * cc
     * valid ``id``s are:
       * enc = 1 - 3
       * arc = 1 - 4
       * gridx/gridy = 1 - 2
-      * cc = 1 - 4, 1 - 16, 1 - 127. for device, channel and knob
     * engine ``control_number``s are:
       * 1 = gain
       * 2 = position
@@ -147,6 +144,12 @@ there are several commands to configure controls, set parameter values, and save
       * 9 = midx
       * 10 = highx
       * 11 = quality
+  * midi cc's: ``cc midi_device midi_chan cc_number track/fx control_number``
+      * midi_device = 1 - 16
+      * midi_chan = 1 -16
+      * cc_number = 0 - 127
+      * track/fx = 1 - 4 or "fx"
+      * control_number = listed above :)
   * for example:
     * ``enc 3 1 6`` = set encoder 3 to track 1 density control
     * ``arc 2 fx 6`` = set arc ring 2 to fx mod_depth
