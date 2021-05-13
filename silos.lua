@@ -30,7 +30,7 @@ local track = 1
 local show_info = false
 local info_focus = 1
 -- controls table in the format controls[track][parameter name]
-controls = {}
+--[[controls = {}
 for i = 1, TRACKS do
   controls[i] = {
     i .. "gain",
@@ -47,7 +47,39 @@ for i = 1, TRACKS do
     i .. "rq",
     i .. "send"
   }
-end
+end]]
+
+controls = {
+  "gain",
+  "position",
+  "speed",
+  "jitter",
+  "size",
+  "pitch",
+  "fdbk",
+  "density",
+  "dispersal",
+  "spread",
+  "cutoff",
+  "rq",
+  "send"
+}
+
+control_shorts = {
+  "gai",
+  "pos",
+  "spe",
+  "jit",
+  "siz",
+  "pit",
+  "fdb",
+  "den",
+  "dis",
+  "spr",
+  "cut",
+  "rq",
+  "sen"
+}
 
 fx_controls = {
   "fx_gain",
@@ -62,6 +94,21 @@ fx_controls = {
   "highx",
   "quality"
 }
+
+fx_shorts = {
+  "fxg",
+  "tim",
+  "siz",
+  "dam",
+  "dif",
+  "mdp",
+  "mfq",
+  "low",
+  "mid",
+  "hig",
+  "qua"
+}
+
 
 local bit_depths = {4, 8, 10, 12, 32}
 
@@ -349,7 +396,7 @@ local function draw_fx_params()
   screen.move(54, 10)
   screen.text_center("-fx-")
   screen.move(1, 18)
-  screen.text("1 gain " .. string.format("%.2f", params:get("fx_gain")))
+  screen.text("1 fx_gain " .. string.format("%.2f", params:get("fx_gain")))
   screen.move(1, 26)
   screen.text("2 time " .. string.format("%.1f", params:get("time")))
   screen.move(1, 34)
@@ -637,6 +684,16 @@ end
 
 -- keyboard input ----------
 
+local function get_index(key, table)
+  local index = {}
+  for k, v in pairs(table) do
+    index[v] = k
+  end
+  return index[key]
+end
+
+
+
 function keyboard.char(character)
   if keyboard.ctrl() or keyboard.alt() then
   else
@@ -862,14 +919,21 @@ function keyboard.code(code,value)
         save_pset()
       elseif command[1] == "load_pset" then
         load_pset()
-      elseif command[2] == "fx" then
-        local c, v = command[1], tonumber(command[3])
-        if c == "gain" then c = "fx_" .. c end
-        params:set(c, v)
       -- set single parameters
-      elseif tabutil.contains(controls[tonumber(command[2])], command[2] .. command[1]) then
-        local v = tonumber(command[3])
-        params:set(command[2] .. command[1], v)
+      elseif tabutil.contains(controls, command[1]) then
+        local p, v = command[2] .. command[1], tonumber(command[3])
+        params:set(p, v)
+      elseif tabutil.contains(control_shorts, command[1]) then
+        local i = get_index(command[1], control_shorts)
+        local p, v = command[2] .. controls[i], tonumber(command[3])
+        params:set(p, v)
+      elseif tabutil.contains(fx_controls, command[1]) and command[2] == "fx" then
+        local c, v = command[1], tonumber(command[3])
+        params:set(c, v)
+      elseif tabutil.contains(fx_shorts, command[1]) and command[2] == "fx" then
+        local i = get_fx_index(command[1], fx_shorts)
+        local p, v = fx_controls[i], tonumber(command[3])
+        params:set(p, v)
       end
       -- append the command to history
       table.insert(history, my_string)
@@ -880,4 +944,3 @@ function keyboard.code(code,value)
     is_dirty = true
   end
 end
-
