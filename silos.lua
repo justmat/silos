@@ -29,26 +29,7 @@ local new_line = false
 local track = 1
 local show_info = false
 local info_focus = 1
--- controls table in the format controls[track][parameter name]
---[[controls = {}
-for i = 1, TRACKS do
-  controls[i] = {
-    i .. "gain",
-    i .. "position",
-    i .. "speed",
-    i .. "jitter",
-    i .. "size",
-    i .. "pitch",
-    i .. "fdbk",
-    i .. "density",
-    i .. "dispersal",
-    i .. "spread",
-    i .. "cutoff",
-    i .. "rq",
-    i .. "send"
-  }
-end]]
-
+-- control names and shorts 
 controls = {
   "gain",
   "position",
@@ -110,7 +91,8 @@ fx_shorts = {
 }
 
 
-local bit_depths = {4, 8, 10, 12, 32}
+local bit_depths = {4, 8, 10, 12, 24, 32}
+
 
 local function set_quality(v)
   engine.bit_depth(bit_depths[v])
@@ -691,7 +673,6 @@ local function get_index(key, table)
   end
   return index[key]
 end
-
 
 
 function keyboard.char(character)
