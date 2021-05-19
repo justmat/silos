@@ -866,15 +866,15 @@ function keyboard.code(code,value)
       elseif command[1] == "s" or command[1] == "snap" then
         local snap_id, t = tonumber(command[2]), tonumber(command[3])
         silos.snaps[t][snap_id] = {}
-        for i = 1, #controls[t] do
-          table.insert(silos.snaps[t][snap_id], params:get(controls[t][i]))
+        for i = 1, #controls do
+          table.insert(silos.snaps[t][snap_id], params:get(t .. controls[i]))
         end
       -- load
       elseif command[1] == "l" or command[1] == "load" then
         local snap_id, t = tonumber(command[2]), tonumber(command[3])
         if #silos.snaps[t][snap_id] > 0 then
-          for i = 1, #controls[t] do
-            params:set(controls[t][i], silos.snaps[t][snap_id][i])
+          for i = 1, #controls do
+            params:set(t .. controls[i], silos.snaps[t][snap_id][i])
           end
         end
       -- macro commands
