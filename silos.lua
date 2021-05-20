@@ -90,7 +90,6 @@ fx_shorts = {
   "qua"
 }
 
-
 local bit_depths = {4, 8, 10, 12, 24, 32}
 
 
@@ -547,7 +546,6 @@ function redraw()
 end
 
 -- arc ------------
-
 function a.delta(n, d)
   params:delta(silos.arc_choices[n], d / 10)
   is_dirty = true
@@ -564,7 +562,6 @@ function arc_redraw()
 end
 
 -- grid ----------
-
 function grid_2xy(x, y, z)
   -- two 8x8 x/y pads
   if x <= 8  and z == 1 then
@@ -666,7 +663,6 @@ function g.redraw()
 end
 
 -- keyboard input ----------
-
 local function get_index(key, table)
   local index = {}
   for k, v in pairs(table) do
