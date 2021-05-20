@@ -596,12 +596,13 @@ function grid_snap(x, y, z)
     if grid_alt then
       local snap_id, t = x, y
       silos.snaps[t][snap_id] = {}
-      for i = 1, #controls[t] do
-        table.insert(silos.snaps[t][snap_id], params:get(controls[t][i]))
+      for i = 1, #controls do
+        table.insert(silos.snaps[t][snap_id], params:get(t .. controls[i]))
       end
     elseif #silos.snaps[y][x] > 0 then
-      for i = 1, #controls[y] do
-        params:set(controls[y][i], silos.snaps[y][x][i])
+      local snap_id, t = x, y
+      for i = 1, #controls do
+        params:set(t .. controls[i], silos.snaps[t][snap_id][i])
       end
     end
   elseif x == 4 and y == 6 then
