@@ -799,7 +799,7 @@ function keyboard.code(code,value)
           silos.arc_choices[id] = fx_controls[control]
         else
           local track, control = tonumber(command[3]), tonumber(command[4])
-          silos.arc_choices[id] = controls[track][control]
+          silos.arc_choices[id] = track .. controls[control]
         end
       -- MIDI
       -- assign CC's
