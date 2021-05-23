@@ -14,6 +14,6 @@ ideas for future features, in no particular order.
 * buffer clearing
 * tape commands for starting/stopping recording and/or playback of TAPE files
 * cc control macros
-* midi keyboard mode - play notes to tune pitches? round robin type voice allocation? (needs more thought. should note on/off dictate gate on/off of voices?)
+* midi keyboard mode - play notes to tune pitches? round robin type voice allocation? needs more thought. (should note on/off dictate gate on/off of voices?)
 * grid mode for snapshot sequencing
 * distinct arc drawings depending on control mappings
