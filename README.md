@@ -16,4 +16,4 @@ ideas for future features, in no particular order.
 * cc control macros
 * midi keyboard mode - play notes to tune pitches? round robin type voice allocation? needs more thought. (should note on/off dictate gate on/off of voices?)
 * grid mode for snapshot sequencing
-* distinct arc drawings depending on control mappings
+* distinct arc drawings depending on control mappings (several options could be lifted from [larc](https://github.com/justmat/larc))
