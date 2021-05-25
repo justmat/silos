@@ -819,9 +819,9 @@ function keyboard.code(code,value)
         else
           local track, control = tonumber(command[5]), tonumber(command[6])
           silos.midi_choices[id] = controls[track][control]
-          norns.pmap.remove(controls[track][control])
-          norns.pmap.new(controls[track][control])
-          norns.pmap.assign(controls[track][control], midi_device, midi_channel, midi_cc)
+          norns.pmap.remove(track .. controls[control])
+          norns.pmap.new(track .. controls[control])
+          norns.pmap.assign(track .. controls[control], midi_device, midi_channel, midi_cc)
         end
       -- gridx
       elseif command[1] == "gridx" then
