@@ -789,7 +789,7 @@ function keyboard.code(code,value)
           silos.enc_choices[id] = fx_controls[control]
         else
           local track, control = tonumber(command[3]), tonumber(command[4])
-          silos.enc_choices[id] = controls[track][control]
+          silos.enc_choices[id] = track .. controls[control]
         end
       -- arc
       elseif command[1] == "arc" then
@@ -831,7 +831,7 @@ function keyboard.code(code,value)
           silos.gridx_choices[id] = fx_controls[control]
         else
           local track, control = tonumber(command[3]), tonumber(command[4])
-          silos.gridx_choices[id] = controls[track][control]
+          silos.gridx_choices[id] = track .. controls[control]
         end
       -- gridy
       elseif command[1] == "gridy" then
@@ -841,7 +841,7 @@ function keyboard.code(code,value)
           silos.gridy_choices[id] = fx_controls[control]
         else
           local track, control = tonumber(command[3]), tonumber(command[4])
-          silos.gridy_choices[id] = controls[track][control]
+          silos.gridy_choices[id] = track .. controls[control]
         end
       -- set grid mode
       elseif command[1] == "grid_mode" then
@@ -885,7 +885,7 @@ function keyboard.code(code,value)
           table.insert(silos.muls[id], mul)
         else
           local track, control, mul = tonumber(command[3]), tonumber(command[4]), tonumber(command[5])
-          table.insert(silos.macros[id], controls[track][control])
+          table.insert(silos.macros[id], track .. controls[control])
           table.insert(silos.muls[id], mul)
         end
       -- state/pset persistence
