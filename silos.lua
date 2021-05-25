@@ -758,7 +758,7 @@ function keyboard.code(code,value)
           params:set(p, n)
         else
           local track, control = tonumber(command[2]), tonumber(command[3])
-          local p = controls[track][control]
+          local p = track .. controls[control]
           local low, high = tonumber(params:get_range(p)[1]), tonumber(params:get_range(p)[2])
           local n = util.linlin(0, 1, low, high, math.random())
           params:set(p, n)
@@ -773,7 +773,7 @@ function keyboard.code(code,value)
           params:set(p, n)
         else
           local track, control = tonumber(command[2]), tonumber(command[3])
-          local p = controls[track][control]
+          local p = track .. controls[control]
           local n = util.linlin(0, 1, low, high, math.random())
           params:set(p, n)
         end
