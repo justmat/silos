@@ -39,14 +39,12 @@ Engine_Thresher : CroneEngine {
 
     SynthDef(\synth, {
       arg out, effectBus, phase_out, buf,
-      gate=0, pos=0, speed=1, jitter=0,
-      size=0.1, density=0, density_mod_amt=0, size_mod_amt=0, pitch=1, spread=0, gain=1, envscale=1,
-      freeze=0, t_reset_pos=0, send=0, cutoff=20000, rq=1;
+      gate=0, pos=0, speed=1, jitter=0, jitter_slew=0.0,
+      size=0.1, size_slew=0.0, size_mod_amt=0, density=0, density_slew=0.0, trig_mode=0, pitch=1, pitch_slew=0.0,
+      spread=0, gain=1, envscale=1, freeze=0, t_reset_pos=0, send=0, cutoff=20000, cutoff_slew=0.0, rq=1;
 
       var grain_trig;
       var jitter_sig;
-      var trig_rnd;
-      var density_mod;
       var size_rnd;
       var buf_dur;
       var pan_sig;
@@ -55,9 +53,8 @@ Engine_Thresher : CroneEngine {
       var sig;
       var level;
 
-      trig_rnd = LFNoise0.kr(density);
-      density_mod = density * (2**(trig_rnd * density_mod_amt));
-      grain_trig = Impulse.kr(density_mod);
+      density = Lag.kr(density, density_slew);
+      grain_trig = Select.kr(trig_mode, [Impulse.kr(density), Dust.kr(density)]);
 
       buf_dur = BufDur.kr(buf);
 
@@ -67,6 +64,7 @@ Engine_Thresher : CroneEngine {
         hi: spread
       );
 
+      jitter = Lag.kr(jitter, jitter_slew);
       jitter_sig = TRand.kr(
         trig: grain_trig,
         lo: buf_dur.reciprocal.neg * jitter,
@@ -80,8 +78,13 @@ Engine_Thresher : CroneEngine {
       );
 
       pos_sig = Wrap.kr(Select.kr(freeze, [buf_pos, pos]));
-
-      sig = GrainBuf.ar(2, grain_trig, size, buf, pitch, pos_sig + jitter_sig, 2, Lag.kr(pan_sig, 0.2), -1.0, 256.0);
+      
+      size = Lag.kr(size, size_slew);
+      pitch = Lag.kr(pitch, pitch_slew);
+      cutoff = Lag.kr(cutoff, cutoff_slew);
+      
+      
+      sig = GrainBuf.ar(2, grain_trig, size, buf, pitch, pos_sig + jitter_sig, 2, pan_sig, -1.0, 256.0);
       sig = BLowPass4.ar(sig, cutoff, rq);
       
       level = EnvGen.kr(Env.asr(1, 1, 1), gate: gate, timeScale: envscale);
@@ -181,25 +184,45 @@ Engine_Thresher : CroneEngine {
       var voice = msg[1] - 1;
       voices[voice].set(\jitter, msg[2]);
     });
+    
+    this.addCommand("jitter_slew", "if", { arg msg;
+      var voice = msg[1] - 1;
+      voices[voice].set(\jitter_slew, msg[2]);
+    });
 
     this.addCommand("size", "if", { arg msg;
       var voice = msg[1] - 1;
       voices[voice].set(\size, msg[2]);
     });
 
+    this.addCommand("size_slew", "if", { arg msg;
+      var voice = msg[1] - 1;
+      voices[voice].set(\size_slew, msg[2]);
+    });
+
     this.addCommand("density", "if", { arg msg;
       var voice = msg[1] - 1;
       voices[voice].set(\density, msg[2]);
     });
-
-    this.addCommand("density_mod_amt", "if", { arg msg;
+    
+    this.addCommand("density_slew", "if", { arg msg;
       var voice = msg[1] - 1;
-      voices[voice].set(\density_mod_amt, msg[2]);
+      voices[voice].set(\density_slew, msg[2]);
+    });
+
+    this.addCommand("trig_mode", "ii", { arg msg;
+      var voice = msg[1] - 1;
+      voices[voice].set(\trig_mode, msg[2]);
     });
 
     this.addCommand("pitch", "if", { arg msg;
       var voice = msg[1] - 1;
       voices[voice].set(\pitch, msg[2]);
+    });
+    
+    this.addCommand("pitch_slew", "if", { arg msg;
+      var voice = msg[1] - 1;
+      voices[voice].set(\pitch_slew, msg[2]);
     });
 
     this.addCommand("spread", "if", { arg msg;
@@ -217,20 +240,26 @@ Engine_Thresher : CroneEngine {
       voices[voice].set(\envscale, msg[2]);
     });
     
-    this.addCommand("cutoff", "if", { arg msg;
-		var voice = msg[1] -1;
-		voices[voice].set(\cutoff, msg[2]);
-		});
+	this.addCommand("cutoff", "if", { arg msg;
+	  var voice = msg[1] -1;
+	  voices[voice].set(\cutoff, msg[2]);
+	});
 		
-		this.addCommand("rq", "if", { arg msg;
-		var voice = msg[1] -1;
-		voices[voice].set(\rq, msg[2]);
-		});
+	this.addCommand("cutoff_slew", "if", { arg msg;
+	  var voice = msg[1] -1;
+	  voices[voice].set(\cutoff_slew, msg[2]);
+	});
+		
+	this.addCommand("rq", "if", { arg msg;
+	  var voice = msg[1] -1;
+	  voices[voice].set(\rq, msg[2]);
+	});
 
     this.addCommand("send", "if", { arg msg;
     var voice = msg[1] -1;
     voices[voice].set(\send, msg[2]);
     });
+    
 
     num_voices.do({ arg i;
       this.addPoll(("phase_" ++ (i + 1)).asSymbol, {
