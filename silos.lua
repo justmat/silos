@@ -39,7 +39,7 @@ controls = {
   "pitch",
   "fdbk",
   "density",
-  "dispersal",
+  "trig_mode",
   "spread",
   "cutoff",
   "rq",
@@ -55,7 +55,7 @@ control_shorts = {
   "pit",
   "fdb",
   "den",
-  "dis",
+  "tmd",
   "spr",
   "cut",
   "rq",
@@ -170,7 +170,7 @@ function init()
 
   params:add_separator()
   for i = 1, TRACKS do
-    params:add_group("track " .. i, 15)
+    params:add_group("track " .. i, 21)
 
     params:add_number(i .. "gate", i .. " gate", 0, 1, 0)
     params:set_action(i .. "gate", function(value) engine.gate(i, value) end)
@@ -196,8 +196,8 @@ function init()
     params:add_taper(i .. "density", i .. " density", 0, 256, 32, 6, "hz")
     params:set_action(i .. "density", function(value) engine.density(i, value) end)
 
-    params:add_control(i.."dispersal", i.." dispersal", controlspec.new(0.00, 1.00, "lin", 0, 0))
-    params:set_action(i.."dispersal", function(v) engine.density_mod_amt(i, v) end)
+    params:add_number(i.."trig_mode", i.." trig mode", 0, 1, 0)
+    params:set_action(i.."trig_mode", function(v) engine.trig_mode(i, v) end)
 
     params:add_taper(i .. "pitch", i .. " pitch", -4, 4, 1, 0, "")
     params:set_action(i .. "pitch", function(value) engine.pitch(i, value) end)
@@ -216,6 +216,23 @@ function init()
 
     params:add_control(i .. "send", i .." send", controlspec.new(0.0, 1.0, "lin", 0.01, 0))
     params:set_action(i .. "send", function(value) engine.send(i, value) end)
+    
+    params:add_separator("slews")
+    
+    params:add_control(i .. "jitter_slew", i .. " jitter slew", controlspec.new(0.0, 20.0, "lin", 0.1, 0))
+    params:set_action(i .. "jitter_slew", function(v) engine.jitter_slew(i, v) end)
+    
+    params:add_control(i .. "size_slew", i .. " size slew", controlspec.new(0.0, 20.0, "lin", 0.1, 0))
+    params:set_action(i .. "size_slew", function(v) engine.size_slew(i, v) end)
+    
+    params:add_control(i .. "density_slew", i .. " density slew", controlspec.new(0.0, 20.0, "lin", 0.1, 0))
+    params:set_action(i .. "density_slew", function(v) engine.density_slew(i, v) end)
+    
+    params:add_control(i .. "pitch_slew", i .. " pitch slew", controlspec.new(0.0, 20.0, "lin", 0.1, 0))
+    params:set_action(i .. "pitch_slew", function(v) engine.pitch_slew(i, v) end)
+    
+    params:add_control(i .. "cutoff_slew", i .. " cutoff slew", controlspec.new(0.0, 20.0, "lin", 0.1, 0))
+    params:set_action(i .. "cutoff_slew", function(v) engine.cutoff_slew(i, v) end)
   end
 
    params:add_group("fx", 13)
@@ -355,7 +372,7 @@ local function draw_engine_params1()
   screen.move(65, 34)
   screen.text(8 .. " density " .. string.format("%.1f", params:get(track .. "density")))
   screen.move(65, 42)
-  screen.text(9 .. " dispersal "..string.format("%.1f", params:get(track .. "dispersal")))
+  screen.text(9 .. " trig mode "..string.format("%.1f", params:get(track .. "trig_mode")))
   screen.move(65, 50)
   screen.text(10 .. " spread " .. string.format("%.1f", params:get(track .. "spread")))
 end
@@ -912,6 +929,8 @@ function keyboard.code(code,value)
         local i = get_fx_index(command[1], fx_shorts)
         local p, v = fx_controls[i], tonumber(command[3])
         params:set(p, v)
+      else
+        print("syntax error!")
       end
       -- append the command to history
       table.insert(history, my_string)
