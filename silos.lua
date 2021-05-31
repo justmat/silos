@@ -43,7 +43,14 @@ controls = {
   "spread",
   "cutoff",
   "rq",
-  "send"
+  "send",
+  "gain_slew",
+  "jitter_slew",
+  "size_slew",
+  "density_slew",
+  "pitch_slew",
+  "cutoff"
+  
 }
 
 control_shorts = {
@@ -59,7 +66,13 @@ control_shorts = {
   "spr",
   "cut",
   "rq",
-  "sen"
+  "sen",
+  "gsl",
+  "jsl",
+  "ssl",
+  "dsl",
+  "psl",
+  "csl"
 }
 
 fx_controls = {
