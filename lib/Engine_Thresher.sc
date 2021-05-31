@@ -40,12 +40,11 @@ Engine_Thresher : CroneEngine {
     SynthDef(\synth, {
       arg out, effectBus, phase_out, buf,
       gate=0, pos=0, speed=1, jitter=0, jitter_slew=0.0,
-      size=0.1, size_slew=0.0, size_mod_amt=0, density=0, density_slew=0.0, trig_mode=0, pitch=1, pitch_slew=0.0,
-      spread=0, gain=1, envscale=1, freeze=0, t_reset_pos=0, send=0, cutoff=20000, cutoff_slew=0.0, rq=1;
+      size=0.1, size_slew=0.0, density=0, density_slew=0.0, trig_mode=0, pitch=1, pitch_slew=0.0,
+      spread=0, gain=1, gain_slew=0.0, envscale=1, freeze=0, t_reset_pos=0, send=0, cutoff=20000, cutoff_slew=0.0, rq=1;
 
       var grain_trig;
       var jitter_sig;
-      var size_rnd;
       var buf_dur;
       var pan_sig;
       var buf_pos;
@@ -53,7 +52,7 @@ Engine_Thresher : CroneEngine {
       var sig;
       var level;
 
-      density = Lag.kr(density, density_slew);
+      density = Lag2.kr(density, density_slew);
       grain_trig = Select.kr(trig_mode, [Impulse.kr(density), Dust.kr(density)]);
 
       buf_dur = BufDur.kr(buf);
@@ -64,7 +63,7 @@ Engine_Thresher : CroneEngine {
         hi: spread
       );
 
-      jitter = Lag.kr(jitter, jitter_slew);
+      jitter = Lag2.kr(jitter, jitter_slew);
       jitter_sig = TRand.kr(
         trig: grain_trig,
         lo: buf_dur.reciprocal.neg * jitter,
@@ -79,9 +78,10 @@ Engine_Thresher : CroneEngine {
 
       pos_sig = Wrap.kr(Select.kr(freeze, [buf_pos, pos]));
       
-      size = Lag.kr(size, size_slew);
-      pitch = Lag.kr(pitch, pitch_slew);
-      cutoff = Lag.kr(cutoff, cutoff_slew);
+      gain = Lag2.kr(gain, gain_slew);
+      size = Lag2.kr(size, size_slew);
+      pitch = Lag2.kr(pitch, pitch_slew);
+      cutoff = Lag2.kr(cutoff, cutoff_slew);
       
       
       sig = GrainBuf.ar(2, grain_trig, size, buf, pitch, pos_sig + jitter_sig, 2, pan_sig, -1.0, 256.0);
@@ -234,26 +234,31 @@ Engine_Thresher : CroneEngine {
       var voice = msg[1] - 1;
       voices[voice].set(\gain, msg[2]);
     });
+    
+    this.addCommand("gain_slew", "if", { arg msg;
+      var voice = msg[1] - 1;
+      voices[voice].set(\gain_slew, msg[2]);
+    });
 
     this.addCommand("envscale", "if", { arg msg;
       var voice = msg[1] - 1;
       voices[voice].set(\envscale, msg[2]);
     });
     
-	this.addCommand("cutoff", "if", { arg msg;
-	  var voice = msg[1] -1;
-	  voices[voice].set(\cutoff, msg[2]);
-	});
+    this.addCommand("cutoff", "if", { arg msg;
+		var voice = msg[1] -1;
+		voices[voice].set(\cutoff, msg[2]);
+		});
 		
-	this.addCommand("cutoff_slew", "if", { arg msg;
-	  var voice = msg[1] -1;
-	  voices[voice].set(\cutoff_slew, msg[2]);
-	});
+		this.addCommand("cutoff_slew", "if", { arg msg;
+		var voice = msg[1] -1;
+		voices[voice].set(\cutoff_slew, msg[2]);
+		});
 		
-	this.addCommand("rq", "if", { arg msg;
-	  var voice = msg[1] -1;
-	  voices[voice].set(\rq, msg[2]);
-	});
+		this.addCommand("rq", "if", { arg msg;
+		var voice = msg[1] -1;
+		voices[voice].set(\rq, msg[2]);
+		});
 
     this.addCommand("send", "if", { arg msg;
     var voice = msg[1] -1;
