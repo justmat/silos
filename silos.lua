@@ -170,7 +170,7 @@ function init()
 
   params:add_separator()
   for i = 1, TRACKS do
-    params:add_group("track " .. i, 21)
+    params:add_group("track " .. i, 22)
 
     params:add_number(i .. "gate", i .. " gate", 0, 1, 0)
     params:set_action(i .. "gate", function(value) engine.gate(i, value) end)
@@ -218,6 +218,9 @@ function init()
     params:set_action(i .. "send", function(value) engine.send(i, value) end)
     
     params:add_separator("slews")
+    
+    params:add_control(i .. "gain_slew", i .. " gain slew", controlspec.new(0.0, 20.0, "lin", 0.1, 0))
+    params:set_action(i .. "gain_slew", function(v) engine.gain_slew(i, v) end)
     
     params:add_control(i .. "jitter_slew", i .. " jitter slew", controlspec.new(0.0, 20.0, "lin", 0.1, 0))
     params:set_action(i .. "jitter_slew", function(v) engine.jitter_slew(i, v) end)
