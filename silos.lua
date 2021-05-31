@@ -206,7 +206,7 @@ function init()
     params:add_taper(i .. "size", i .. " size", 1, 500, 150, 5, "ms")
     params:set_action(i .. "size", function(value) engine.size(i, value / 1000) end)
 
-    params:add_taper(i .. "density", i .. " density", 0, 256, 32, 6, "hz")
+    params:add_taper(i .. "density", i .. " density", 0, 130, 32, 6, "hz")
     params:set_action(i .. "density", function(value) engine.density(i, value) end)
 
     params:add_number(i.."trig_mode", i.." trig mode", 0, 1, 0)
