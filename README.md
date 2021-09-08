@@ -18,3 +18,5 @@ ideas for future features, in no particular order.
 * grid mode for snapshot sequencing
 * distinct arc drawings depending on control mappings (several options could be lifted from [larc](https://github.com/justmat/larc))
 * functions - think something like teletype scripts, chain a bunch of commands together, triggerable by pressing the function keys (f1 - f12) - maybe triggerable from midi as well?
+* arc macro controls
+* LFOs - use hnds.lua
