@@ -230,7 +230,7 @@ function init()
     params:add_control(i .. "send", i .." send", controlspec.new(0.0, 1.0, "lin", 0.01, 0))
     params:set_action(i .. "send", function(value) engine.send(i, value) end)
     
-    params:add_separator("slews")
+    params:add_separator("slews " .. i)
     
     params:add_control(i .. "gain_slew", i .. " gain slew", controlspec.new(0.0, 20.0, "lin", 0.1, 0))
     params:set_action(i .. "gain_slew", function(v) engine.gain_slew(i, v) end)
